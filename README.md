@@ -4,7 +4,7 @@ One model, five tests, one shot each. No hints from me: Hy4 writes, runs and che
 In test 3 it picked which animal it sees itself as, drew itself as an octopus and moved onto my desktop.
 
 **▶ Play in your browser:** https://kostikoneuro.github.io/hy4-solo/
-**🎬 Video (Russian):** [YOUTUBE LINK]
+**🎬 Video (Russian):** https://youtu.be/0m3FslpqUWo
 **💬 Telegram:** https://t.me/kostik_neuro
 
 > Русский: все тесты, кроме питомца, открываются прямо в браузере по ссылке выше. Питомца Окто можно скачать и запустить на Windows (инструкция ниже). Промпты на русском и английском в папке [`prompts/`](prompts/).
