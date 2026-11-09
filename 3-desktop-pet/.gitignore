@@ -1,0 +1,11 @@
+.env
+*.env
+tools/raw/
+tools/generation_log.json
+status.json
+debug.cmd
+__pycache__/
+*.pyc
+*.pyo
+build/
+dist/

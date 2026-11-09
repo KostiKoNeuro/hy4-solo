@@ -1,0 +1,456 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img" aria-labelledby="t d" stroke-linecap="round" stroke-linejoin="round">
+  <title id="t">Жираф в телефонной будке</title>
+  <desc id="d">Мультяшный жираф пытается втиснуться в крошечную красную телефонную будку и всё-таки позвонить. Бесшовный цикл 8 секунд.</desc>
+
+  <defs>
+    <radialGradient id="bg" cx="48%" cy="38%" r="78%">
+      <stop offset="0%" stop-color="#FFF9E9"/>
+      <stop offset="62%" stop-color="#FFEFC9"/>
+      <stop offset="100%" stop-color="#FFDCA0"/>
+    </radialGradient>
+    <linearGradient id="boothRed" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F3543F"/>
+      <stop offset="55%" stop-color="#DC3527"/>
+      <stop offset="100%" stop-color="#B62119"/>
+    </linearGradient>
+    <linearGradient id="boothSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#9E1D16"/>
+      <stop offset="100%" stop-color="#71150F"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#A9E4F2"/>
+      <stop offset="55%" stop-color="#6FC3DE"/>
+      <stop offset="100%" stop-color="#3E94B4"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFE28A"/>
+      <stop offset="100%" stop-color="#E5A52F"/>
+    </linearGradient>
+    <linearGradient id="hide" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFDA75"/>
+      <stop offset="60%" stop-color="#FBBE45"/>
+      <stop offset="100%" stop-color="#EFA32E"/>
+    </linearGradient>
+    <clipPath id="paneClip"><rect x="476" y="320" width="164" height="272" rx="4"/></clipPath>
+    <clipPath id="cardClip"><rect x="30" y="30" width="740" height="740" rx="50"/></clipPath>
+  </defs>
+
+  <!-- ============ STICKER CARD ============ -->
+  <rect x="20" y="30" width="760" height="760" rx="62" fill="#D9AE6E" opacity=".38"/>
+  <rect x="16" y="16" width="768" height="768" rx="62" fill="#FFFFFF" stroke="#EBD3A4" stroke-width="3"/>
+  <rect x="30" y="30" width="740" height="740" rx="50" fill="url(#bg)"/>
+
+  <g clip-path="url(#cardClip)">
+    <circle cx="392" cy="342" r="286" fill="#FFFFFF" opacity=".26"/>
+
+    <!-- twinkles -->
+    <g fill="#FFFFFF" stroke="none">
+      <g><animate attributeName="opacity" values=".9;.2;.9;.35;.9" keyTimes="0;.25;.5;.75;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M126 132 l6 16 16 6 -16 6 -6 16 -6 -16 -16 -6 16 -6 z"/></g>
+      <g><animate attributeName="opacity" values=".25;.9;.25;.8;.25" keyTimes="0;.25;.5;.75;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M690 148 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5 z"/></g>
+      <g><animate attributeName="opacity" values=".7;.15;.8;.2;.7" keyTimes="0;.25;.5;.75;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M118 372 l4 11 11 4 -11 4 -4 11 -4 -11 -11 -4 11 -4 z"/></g>
+      <g><animate attributeName="opacity" values=".2;.85;.2;.7;.2" keyTimes="0;.25;.5;.75;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M706 452 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 z"/></g>
+    </g>
+    <g fill="#E9BE74" opacity=".5" stroke="none">
+      <circle cx="212" cy="112" r="5"/><circle cx="618" cy="110" r="4"/>
+      <circle cx="92" cy="252" r="4"/><circle cx="722" cy="330" r="5"/>
+      <circle cx="150" cy="692" r="5"/><circle cx="726" cy="626" r="4"/>
+    </g>
+
+    <!-- ground -->
+    <path d="M44 686 Q400 704 756 686" fill="none" stroke="#E7BE7C" stroke-width="7" opacity=".65"/>
+    <g>
+      <animateTransform attributeName="transform" type="scale" values="1 1;1.06 .92;1 1;1 1;1.02 .97;1 1;1.05 .93;1 1;1 1" keyTimes="0;.12;.24;.38;.52;.62;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+      <ellipse cx="556" cy="680" rx="152" ry="22" fill="#C99A55" opacity=".30"/>
+      <ellipse cx="204" cy="672" rx="172" ry="24" fill="#C99A55" opacity=".26"/>
+    </g>
+
+    <!-- ============ PHONE BOOTH (wobbles + squashes) ============ -->
+    <g id="boothWobble">
+      <animateTransform attributeName="transform" type="rotate"
+        values="0 560 676;-4.5 560 676;4 560 676;-1 560 676;0 560 676;-2.4 560 676;2.4 560 676;-2.4 560 676;2.4 560 676;3 560 676;0 560 676;0 560 676"
+        keyTimes="0;.12;.24;.38;.52;.56;.60;.64;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+      <g transform="translate(560,676)">
+        <g>
+          <animateTransform attributeName="transform" type="scale"
+            values="1 1;1.05 .94;1 1;1 1;1 1;1 1;1 1;1.04 .96;1 1;1 1"
+            keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+          <g transform="translate(-560,-676)">
+
+            <!-- side, base, body -->
+            <path d="M664 252 L690 238 L690 654 L664 676 Z" fill="url(#boothSide)" stroke="#6E1712" stroke-width="5"/>
+            <path d="M672 268 L682 262 L682 640 L672 648" fill="none" stroke="#E8A93C" stroke-width="3" opacity=".55"/>
+            <rect x="440" y="656" width="238" height="24" rx="6" fill="#8E1D16" stroke="#6E1712" stroke-width="5"/>
+            <rect x="452" y="250" width="212" height="414" rx="10" fill="url(#boothRed)" stroke="#6E1712" stroke-width="6"/>
+
+            <!-- roof + finial -->
+            <path d="M436 250 L448 224 Q558 202 668 224 L680 250 Z" fill="#B0271C" stroke="#6E1712" stroke-width="6"/>
+            <path d="M448 224 Q558 202 668 224" fill="none" stroke="url(#gold)" stroke-width="8"/>
+            <circle cx="558" cy="204" r="9" fill="url(#gold)" stroke="#6E1712" stroke-width="4"/>
+            <path d="M440 250 H676" stroke="#6E1712" stroke-width="5" opacity=".5"/>
+
+            <!-- sign with telephone pictogram, no words -->
+            <rect x="468" y="260" width="180" height="44" rx="7" fill="#FFF3D2" stroke="#E8A93C" stroke-width="5"/>
+            <path d="M540 275 q-8 2 -8 10 0 15 26 15 t26 -15 q0 -8 -8 -10 l-7 11 q-2 4 -11 4 t-11 -4 z" fill="#8E1D16"/>
+            <circle cx="558" cy="282" r="3" fill="#FFF3D2"/>
+
+            <!-- door frame + glass -->
+            <rect x="466" y="310" width="184" height="302" rx="6" fill="#A81F18" stroke="#6E1712" stroke-width="5"/>
+            <rect x="476" y="320" width="164" height="272" rx="4" fill="url(#glass)"/>
+
+            <!-- ===== INTERIOR (clipped to the pane) ===== -->
+            <g clip-path="url(#paneClip)">
+              <rect x="476" y="320" width="164" height="272" fill="#204A50"/>
+              <path d="M476 320 H640 V402 H476 Z" fill="#2C5C62"/>
+              <path d="M476 560 H640 V592 H476 Z" fill="#17363B"/>
+
+              <!-- stuffed belly + accordion neck seen through the glass -->
+              <path d="M470 592 Q466 506 536 500 Q612 496 644 556 L644 592 Z" fill="#FBBE45" stroke="#8A4E12" stroke-width="5"/>
+              <g fill="#C87A20" stroke="none">
+                <ellipse cx="504" cy="546" rx="17" ry="14"/><ellipse cx="548" cy="524" rx="14" ry="12"/>
+                <ellipse cx="592" cy="540" rx="18" ry="15"/><ellipse cx="620" cy="574" rx="14" ry="12"/>
+                <ellipse cx="520" cy="580" rx="13" ry="11"/>
+              </g>
+              <path d="M498 566 C472 522 500 474 556 470 C616 466 632 412 592 386" fill="none" stroke="#8A4E12" stroke-width="46"/>
+              <path d="M498 566 C472 522 500 474 556 470 C616 466 632 412 592 386" fill="none" stroke="url(#hide)" stroke-width="38"/>
+              <g fill="#C87A20" stroke="none">
+                <circle cx="490" cy="528" r="10"/><circle cx="512" cy="486" r="10"/>
+                <circle cx="562" cy="470" r="10"/><circle cx="614" cy="444" r="9"/><circle cx="596" cy="396" r="9"/>
+              </g>
+
+              <!-- phone set, shelf, coin slot -->
+              <rect x="510" y="380" width="130" height="10" rx="4" fill="#465A62"/>
+              <rect x="516" y="388" width="118" height="98" rx="9" fill="#2C3A42" stroke="#14252B" stroke-width="4"/>
+              <path d="M528 376 v-12 h12 M622 376 v-12 h-12" fill="none" stroke="#465A62" stroke-width="7"/>
+              <rect x="596" y="396" width="28" height="8" rx="4" fill="#14252B"/>
+
+              <!-- rotary dial (spins) -->
+              <g id="dialSpin">
+                <animateTransform attributeName="transform" type="rotate"
+                  values="0 575 438;0 575 438;0 575 438;0 575 438;135 575 438;-30 575 438;0 575 438;0 575 438;0 575 438;0 575 438"
+                  keyTimes="0;.12;.24;.32;.40;.48;.62;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+                <circle cx="575" cy="438" r="30" fill="#F7EBD2" stroke="#14252B" stroke-width="4"/>
+                <g fill="#2C3A42" stroke="none">
+                  <circle cx="575" cy="418" r="4.6"/><circle cx="587" cy="422" r="4.6"/>
+                  <circle cx="594" cy="432" r="4.6"/><circle cx="594" cy="444" r="4.6"/>
+                  <circle cx="587" cy="454" r="4.6"/><circle cx="575" cy="458" r="4.6"/>
+                  <circle cx="563" cy="454" r="4.6"/><circle cx="556" cy="444" r="4.6"/>
+                  <circle cx="556" cy="432" r="4.6"/><circle cx="563" cy="422" r="4.6"/>
+                </g>
+                <circle cx="575" cy="438" r="9" fill="#DCC79C" stroke="#14252B" stroke-width="3"/>
+              </g>
+              <path d="M600 458 l11 8" fill="none" stroke="#B9A277" stroke-width="6"/>
+
+              <!-- falling coin -->
+              <g>
+                <animate attributeName="opacity" values="0;0;0;0;1;1;0;0;0;1;1;0;0" keyTimes="0;.30;.36;.38;.42;.46;.48;.60;.68;.70;.73;.76;1" dur="8s" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" type="translate" values="0 -34;0 -34;0 -34;0 -34;0 -34;0 0;0 0;0 0;0 -34;0 -34;0 0;0 0;0 0" keyTimes="0;.30;.36;.38;.42;.46;.48;.60;.68;.70;.73;.76;1" dur="8s" repeatCount="indefinite"/>
+                <circle cx="610" cy="398" r="9" fill="url(#gold)" stroke="#A96F16" stroke-width="3"/>
+                <path d="M606 398 h8 M610 394 v8" stroke="#A96F16" stroke-width="2" opacity=".7"/>
+              </g>
+
+              <!-- little foot shelf ("pedals") -->
+              <rect x="488" y="580" width="148" height="13" rx="5" fill="#465A62"/>
+              <rect x="580" y="568" width="44" height="9" rx="4" fill="#2C3A42"/>
+
+              <!-- a hoof pumping on the shelf -->
+              <g id="footPump">
+                <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -9;0 0;0 -5;0 0;0 -3;0 -8;0 0;0 0" keyTimes="0;.12;.24;.38;.52;.62;.72;.78;.86;1" dur="8s" repeatCount="indefinite"/>
+                <path d="M620 592 q4 -18 -6 -22" fill="none" stroke="#8A4E12" stroke-width="18"/>
+                <path d="M620 592 q4 -18 -6 -22" fill="none" stroke="url(#hide)" stroke-width="12"/>
+                <ellipse cx="604" cy="568" rx="18" ry="10" fill="#5A3A22" stroke="#3A2318" stroke-width="3"/>
+                <path d="M604 560 v14" stroke="#3A2318" stroke-width="2.5" opacity=".6"/>
+              </g>
+
+              <!-- a foreleg reaching the dial -->
+              <g transform="translate(556,456)">
+                <g>
+                  <animateTransform attributeName="transform" type="rotate" values="0;0;0;0;-24;12;0;0;-16;0" keyTimes="0;.12;.24;.32;.40;.48;.62;.68;.72;1" dur="8s" repeatCount="indefinite"/>
+                  <g transform="translate(-556,-456)">
+                    <path d="M478 570 C508 548 536 500 556 456" fill="none" stroke="#8A4E12" stroke-width="30"/>
+                    <path d="M478 570 C508 548 536 500 556 456" fill="none" stroke="url(#hide)" stroke-width="22"/>
+                    <g fill="#C87A20" stroke="none"><circle cx="498" cy="546" r="6"/><circle cx="520" cy="512" r="6"/><circle cx="540" cy="480" r="6"/></g>
+                    <ellipse cx="558" cy="448" rx="17" ry="12" fill="#5A3A22" stroke="#3A2318" stroke-width="3" transform="rotate(-35 558 448)"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <!-- ===== /INTERIOR ===== -->
+
+            <!-- glass tint, shine, smudge -->
+            <rect x="476" y="320" width="164" height="272" rx="4" fill="#7EC8E3" opacity=".16"/>
+            <path d="M484 322 H520 L484 424 Z" fill="#FFFFFF" opacity=".22"/>
+            <path d="M530 322 H546 L500 470 H484 Z" fill="#FFFFFF" opacity=".13"/>
+            <ellipse cx="500" cy="300" rx="18" ry="12" fill="#FFFFFF" opacity=".14"/>
+
+            <!-- mullions -->
+            <path d="M558 320 V592 M476 388 H640 M476 456 H640 M476 524 H640" fill="none" stroke="#B0271C" stroke-width="9"/>
+            <rect x="476" y="320" width="164" height="272" rx="4" fill="none" stroke="#7E1712" stroke-width="5"/>
+
+            <!-- door handle -->
+            <rect x="636" y="446" width="10" height="48" rx="5" fill="url(#gold)" stroke="#6E1712" stroke-width="3"/>
+            <circle cx="641" cy="470" r="8" fill="#FFE9A8" stroke="#6E1712" stroke-width="3"/>
+
+            <!-- lower vent panel -->
+            <rect x="466" y="612" width="184" height="44" rx="4" fill="#A81F18" stroke="#6E1712" stroke-width="4"/>
+            <path d="M490 624 H626 M490 634 H626 M490 644 H626" fill="none" stroke="#71150F" stroke-width="5"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <!-- ============ /BOOTH ============ -->
+
+    <!-- ============ GIRAFFE BODY (breathing / pushing) ============ -->
+    <g transform="translate(206,556)">
+      <g>
+        <animateTransform attributeName="transform" type="scale"
+          values="1 1;1.06 .92;1 1;1 1;1 1;1 1;1 1;1.05 .94;1 1;1 1"
+          keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <g transform="translate(-206,-556)">
+
+          <!-- tail -->
+          <g transform="translate(70,540)">
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="0;-16;22;-8;6;-10;14;-20;4;0" keyTimes="0;.12;.24;.38;.52;.62;.72;.80;.9;1" dur="8s" repeatCount="indefinite"/>
+              <path d="M0 0 C-26 -8 -42 -36 -36 -66" fill="none" stroke="#8A4E12" stroke-width="17"/>
+              <path d="M0 0 C-26 -8 -42 -36 -36 -66" fill="none" stroke="url(#hide)" stroke-width="11"/>
+              <ellipse cx="-37" cy="-74" rx="12" ry="19" fill="#5A3A22" stroke="#3A2318" stroke-width="3" transform="rotate(-22 -37 -74)"/>
+            </g>
+          </g>
+
+          <!-- back legs stuck up in the air -->
+          <g transform="translate(140,462)">
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="0;-14;-30;8;0;-6;-4;-26;3;0" keyTimes="0;.12;.24;.38;.52;.62;.72;.78;.86;1" dur="8s" repeatCount="indefinite"/>
+              <path d="M0 0 C-20 -42 -40 -74 -44 -112" fill="none" stroke="#8A4E12" stroke-width="34"/>
+              <path d="M0 0 C-20 -42 -40 -74 -44 -112" fill="none" stroke="url(#hide)" stroke-width="26"/>
+              <g fill="#C87A20" stroke="none"><circle cx="-16" cy="-34" r="8"/><circle cx="-33" cy="-70" r="7"/></g>
+              <ellipse cx="-46" cy="-122" rx="24" ry="16" fill="#5A3A22" stroke="#3A2318" stroke-width="4" transform="rotate(-18 -46 -122)"/>
+              <path d="M-46 -132 v18" stroke="#3A2318" stroke-width="3" opacity=".6"/>
+            </g>
+          </g>
+          <g transform="translate(232,452)">
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="0;12;26;-10;0;6;4;22;-4;0" keyTimes="0;.12;.24;.38;.52;.62;.72;.78;.86;1" dur="8s" repeatCount="indefinite"/>
+              <path d="M0 0 C18 -42 36 -78 50 -112" fill="none" stroke="#8A4E12" stroke-width="34"/>
+              <path d="M0 0 C18 -42 36 -78 50 -112" fill="none" stroke="url(#hide)" stroke-width="26"/>
+              <g fill="#C87A20" stroke="none"><circle cx="16" cy="-36" r="8"/><circle cx="34" cy="-72" r="7"/></g>
+              <ellipse cx="54" cy="-122" rx="24" ry="16" fill="#5A3A22" stroke="#3A2318" stroke-width="4" transform="rotate(18 54 -122)"/>
+              <path d="M54 -132 v18" stroke="#3A2318" stroke-width="3" opacity=".6"/>
+            </g>
+          </g>
+
+          <!-- body -->
+          <path d="M62 610 C48 520 78 452 152 438 C222 424 292 442 332 492 C366 536 356 610 312 646 C268 682 156 682 106 654 C82 641 68 628 62 610 Z"
+                fill="url(#hide)" stroke="#8A4E12" stroke-width="7"/>
+          <g fill="#C87A20" stroke="none">
+            <ellipse cx="110" cy="500" rx="22" ry="18" transform="rotate(-20 110 500)"/>
+            <ellipse cx="170" cy="478" rx="18" ry="22"/>
+            <ellipse cx="230" cy="470" rx="20" ry="16"/>
+            <ellipse cx="288" cy="492" rx="16" ry="20"/>
+            <ellipse cx="96" cy="560" rx="24" ry="18"/>
+            <ellipse cx="158" cy="548" rx="18" ry="16"/>
+            <ellipse cx="216" cy="540" rx="22" ry="20"/>
+            <ellipse cx="276" cy="560" rx="18" ry="16"/>
+            <ellipse cx="120" cy="610" rx="20" ry="16"/>
+            <ellipse cx="190" cy="608" rx="24" ry="18"/>
+            <ellipse cx="258" cy="610" rx="18" ry="14"/>
+            <ellipse cx="312" cy="596" rx="14" ry="16"/>
+          </g>
+          <path d="M80 632 C140 664 258 664 312 632" fill="none" stroke="#FFE0A0" stroke-width="8" opacity=".45"/>
+
+          <!-- long folded neck -->
+          <path d="M300 486 C246 440 252 366 296 330 C316 314 330 306 344 302" fill="none" stroke="#8A4E12" stroke-width="78"/>
+          <path d="M300 486 C246 440 252 366 296 330 C316 314 330 306 344 302" fill="none" stroke="url(#hide)" stroke-width="66"/>
+          <g fill="#C87A20" stroke="none">
+            <circle cx="270" cy="448" r="12"/><circle cx="266" cy="404" r="12"/>
+            <circle cx="282" cy="362" r="11"/><circle cx="312" cy="332" r="10"/>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- ============ HEAD ============ -->
+    <g transform="translate(478,300)">
+      <g>
+        <!-- squash against the glass -->
+        <animateTransform attributeName="transform" type="scale"
+          values="1 1;1.09 .90;1 1;1 1;1 1;1 1;1 1;1.08 .92;1 1;1 1"
+          keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <g transform="translate(-478,-300)">
+          <g id="headNod">
+            <animateTransform attributeName="transform" type="rotate"
+              values="0 320 320;-3 320 320;6 320 320;-2 320 320;2 320 320;-3 320 320;3 320 320;-5 320 320;1 320 320;0 320 320"
+              keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+
+            <!-- ears -->
+            <g transform="translate(292,226)">
+              <g><animateTransform attributeName="transform" type="rotate" values="0;-10;-28;10;0;-6;4;-24;6;0" keyTimes="0;.12;.24;.38;.52;.62;.72;.78;.86;1" dur="8s" repeatCount="indefinite"/>
+                <path d="M0 0 C-28 -22 -54 -24 -60 -14 C-66 -4 -44 14 -14 18 Z" fill="url(#hide)" stroke="#8A4E12" stroke-width="5"/>
+                <path d="M-14 2 C-32 -10 -46 -12 -48 -8 C-44 0 -34 8 -16 10 Z" fill="#E39A6B"/>
+              </g>
+            </g>
+            <g transform="translate(390,226)">
+              <g><animateTransform attributeName="transform" type="rotate" values="0;8;24;-12;0;6;-4;20;-6;0" keyTimes="0;.12;.24;.38;.52;.62;.72;.78;.86;1" dur="8s" repeatCount="indefinite"/>
+                <path d="M0 0 C22 -28 50 -32 56 -22 C62 -10 40 10 12 16 Z" fill="url(#hide)" stroke="#8A4E12" stroke-width="5"/>
+                <path d="M12 2 C28 -12 42 -14 44 -10 C40 0 30 8 14 10 Z" fill="#E39A6B"/>
+              </g>
+            </g>
+
+            <!-- ossicones -->
+            <g id="horns">
+              <animateTransform attributeName="transform" type="translate" values="0 0;0 4;0 -6;0 0;0 0;0 -2;0 2;0 5;0 0;0 0" keyTimes="0;.12;.24;.38;.52;.62;.72;.78;.86;1" dur="8s" repeatCount="indefinite"/>
+              <path d="M316 216 L312 184" fill="none" stroke="#F2B33D" stroke-width="16"/>
+              <circle cx="311" cy="178" r="13" fill="#7A4A22" stroke="#3A2318" stroke-width="4"/>
+              <path d="M358 212 L361 178" fill="none" stroke="#F2B33D" stroke-width="16"/>
+              <circle cx="362" cy="172" r="13" fill="#7A4A22" stroke="#3A2318" stroke-width="4"/>
+            </g>
+
+            <!-- skull + long muzzle, flat tip squashed on the pane -->
+            <path d="M286 248 C272 272 276 306 302 326 C326 344 358 344 386 336 C410 330 438 330 462 324 C476 322 478 312 478 298 C478 284 470 278 456 276 C428 270 408 254 394 236 C374 210 330 208 306 224 C294 232 288 240 286 248 Z"
+                  fill="url(#hide)" stroke="#8A4E12" stroke-width="7"/>
+            <path d="M398 262 C420 258 448 266 470 284 C476 290 478 296 478 302 C478 312 470 320 458 322 C436 328 410 330 390 330 C382 310 386 278 398 262 Z"
+                  fill="#FFE6B0" stroke="#8A4E12" stroke-width="4"/>
+            <path d="M396 316 C424 322 448 320 470 310" fill="none" stroke="#8A4E12" stroke-width="5"/>
+            <ellipse cx="458" cy="296" rx="7" ry="9" fill="#8A4E12" transform="rotate(-15 458 296)"/>
+            <g id="tongue">
+              <animate attributeName="opacity" values="1;.4;1;1;1;1;1;.3;1;1" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+              <path d="M432 320 C440 340 462 340 468 318 C456 324 444 324 432 320 Z" fill="#F0757A" stroke="#C9555C" stroke-width="3"/>
+            </g>
+            <!-- squish wrinkles -->
+            <path d="M466 278 q8 6 8 14 M466 292 q8 5 8 12 M462 330 q8 -4 10 -10" fill="none" stroke="#B9701A" stroke-width="4" opacity=".7"/>
+            <ellipse cx="408" cy="304" rx="17" ry="10" fill="#F28B8B" opacity=".45"/>
+            <ellipse cx="440" cy="302" rx="11" ry="8" fill="#F28B8B" opacity=".4"/>
+
+            <!-- eyes (blink + darting pupils) -->
+            <g transform="translate(352,266)">
+              <g>
+                <animateTransform attributeName="transform" type="scale" values="1 1;1 1;1 1;1 1;1 .08;1 1;1 .08;1 1;1 1;1 1" keyTimes="0;.12;.24;.34;.36;.40;.66;.68;.86;1" dur="8s" repeatCount="indefinite"/>
+                <g transform="translate(-352,-266)">
+                  <ellipse cx="336" cy="266" rx="26" ry="30" fill="#FFFFFF" stroke="#3A2318" stroke-width="5"/>
+                  <ellipse cx="392" cy="262" rx="17" ry="22" fill="#FFFFFF" stroke="#3A2318" stroke-width="4"/>
+                  <g id="pupils">
+                    <animateTransform attributeName="transform" type="translate" values="0 0;6 -2;-4 2;4 0;0 0;-2 2;0 0;8 -2;0 0;0 0" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+                    <ellipse cx="346" cy="268" rx="11" ry="15" fill="#3A2318"/>
+                    <circle cx="350" cy="262" r="4" fill="#FFFFFF"/>
+                    <ellipse cx="400" cy="264" rx="8" ry="11" fill="#3A2318"/>
+                    <circle cx="403" cy="260" r="3" fill="#FFFFFF"/>
+                  </g>
+                  <path d="M310 232 q24 -14 46 -4 M378 232 q16 -9 30 -1" fill="none" stroke="#8A4E12" stroke-width="6"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- ============ HANDSET IN A HOOF + CORD ============ -->
+    <!-- hoof/arm holding the receiver to the ear -->
+    <path d="M330 356 C314 340 300 320 298 298" fill="none" stroke="#8A4E12" stroke-width="30"/>
+    <path d="M330 356 C314 340 300 320 298 298" fill="none" stroke="url(#hide)" stroke-width="22"/>
+    <ellipse cx="296" cy="292" rx="22" ry="14" fill="#5A3A22" stroke="#3A2318" stroke-width="4"/>
+    <path d="M296 280 v22 M286 285 l4 14 M306 285 l-4 14" fill="none" stroke="#3A2318" stroke-width="2.5" opacity=".55"/>
+
+    <g id="handset">
+      <animateTransform attributeName="transform" type="rotate" values="-16 300 274;-16 300 274;-9 300 274;-16 300 274;-16 300 274;-19 300 274;-13 300 274;-8 300 274;-16 300 274;-16 300 274" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+      <rect x="256" y="262" width="92" height="22" rx="11" fill="#2C3A42" stroke="#14252B" stroke-width="4"/>
+      <circle cx="256" cy="273" r="18" fill="#2C3A42" stroke="#14252B" stroke-width="4"/>
+      <circle cx="348" cy="273" r="18" fill="#2C3A42" stroke="#14252B" stroke-width="4"/>
+      <path d="M248 267 h16 M248 279 h16 M340 267 h16 M340 279 h16" fill="none" stroke="#6E8892" stroke-width="3"/>
+      <rect x="284" y="266" width="34" height="6" rx="3" fill="#5E7C86" opacity=".7"/>
+    </g>
+
+    <!-- curly cord, morphing forever -->
+    <path fill="none" stroke="#14252B" stroke-width="10">
+      <animate attributeName="d" dur="8s" repeatCount="indefinite" keyTimes="0;.25;.5;.75;1"
+        values="M350 288 C374 296 366 316 390 320 C414 324 406 346 430 350 C454 354 446 376 470 380 C494 384 486 406 508 410 C528 414 508 444 520 468;
+                M350 288 C368 300 372 314 388 322 C408 332 412 344 428 352 C448 362 452 374 468 382 C488 392 492 404 506 412 C526 422 512 446 520 468;
+                M350 288 C374 296 366 316 390 320 C414 324 406 346 430 350 C454 354 446 376 470 380 C494 384 486 406 508 410 C528 414 508 444 520 468;
+                M350 288 C368 300 372 314 388 322 C408 332 412 344 428 352 C448 362 452 374 468 382 C488 392 492 404 506 412 C526 422 512 446 520 468;
+                M350 288 C374 296 366 316 390 320 C414 324 406 346 430 350 C454 354 446 376 470 380 C494 384 486 406 508 410 C528 414 508 444 520 468"/>
+    </path>
+    <path fill="none" stroke="#4E6973" stroke-width="3" opacity=".8">
+      <animate attributeName="d" dur="8s" repeatCount="indefinite" keyTimes="0;.25;.5;.75;1"
+        values="M350 288 C374 296 366 316 390 320 C414 324 406 346 430 350 C454 354 446 376 470 380 C494 384 486 406 508 410 C528 414 508 444 520 468;
+                M350 288 C368 300 372 314 388 322 C408 332 412 344 428 352 C448 362 452 374 468 382 C488 392 492 404 506 412 C526 422 512 446 520 468;
+                M350 288 C374 296 366 316 390 320 C414 324 406 346 430 350 C454 354 446 376 470 380 C494 384 486 406 508 410 C528 414 508 444 520 468;
+                M350 288 C368 300 372 314 388 322 C408 332 412 344 428 352 C448 362 452 374 468 382 C488 392 492 404 506 412 C526 422 512 446 520 468;
+                M350 288 C374 296 366 316 390 320 C414 324 406 346 430 350 C454 354 446 376 470 380 C494 384 486 406 508 410 C528 414 508 444 520 468"/>
+    </path>
+    <circle cx="520" cy="468" r="9" fill="#14252B"/>
+
+    <!-- ============ RING ARCS ============ -->
+    <g fill="none" stroke="#E8A93C" stroke-width="6">
+      <g><animate attributeName="opacity" values="0;0;0;0;.95;0;.95;0;0;0" keyTimes="0;.30;.38;.50;.55;.60;.64;.70;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M242 240 q-16 20 0 40"/></g>
+      <g><animate attributeName="opacity" values="0;0;0;0;0;.95;0;.95;0;0" keyTimes="0;.30;.38;.50;.55;.60;.64;.70;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M228 228 q-26 34 0 68"/></g>
+      <g><animate attributeName="opacity" values="0;0;0;0;.7;0;.7;0;.7;0" keyTimes="0;.30;.38;.50;.55;.60;.64;.70;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M214 216 q-36 46 0 92"/></g>
+      <g><animate attributeName="opacity" values="0;0;0;0;.9;0;.9;0;0;0" keyTimes="0;.30;.38;.50;.55;.60;.64;.70;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M696 264 q18 22 0 44"/></g>
+      <g><animate attributeName="opacity" values="0;0;0;0;0;.9;0;.9;0;0" keyTimes="0;.30;.38;.50;.55;.60;.64;.70;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M710 250 q30 38 0 76"/></g>
+    </g>
+
+    <!-- ============ SWEAT ============ -->
+    <g fill="#8AD8FF" stroke="#3A93C4" stroke-width="2.5">
+      <g transform="translate(268,214)"><g>
+        <animate attributeName="opacity" values=".95;.95;0;.4;.4;.4;.4;1;0;.95" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;-4 8;-14 20;0 0;0 0;0 0;0 0;-6 12;-18 26;0 0" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M0 -12 C8 -2 10 4 6 9 C2 14 -6 14 -9 8 C-12 3 -7 -4 0 -12 Z"/><path d="M-3 -5 q-2 6 1 9" fill="none" stroke="#FFFFFF" stroke-width="2" opacity=".8"/>
+      </g></g>
+      <g transform="translate(246,300)"><g>
+        <animate attributeName="opacity" values=".9;.9;0;.3;.3;.3;.3;1;0;.9" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;-6 8;-16 22;0 0;0 0;0 0;0 0;-8 14;-20 28;0 0" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M0 -10 C7 -1 8 4 5 8 C1 12 -5 12 -8 7 C-10 3 -6 -3 0 -10 Z"/>
+      </g></g>
+      <g transform="translate(424,206)"><g>
+        <animate attributeName="opacity" values=".85;.85;0;.3;.3;.3;.3;1;0;.85" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;4 8;12 20;0 0;0 0;0 0;0 0;6 12;16 26;0 0" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+        <path d="M0 -10 C7 -1 8 4 5 8 C1 12 -5 12 -8 7 C-10 3 -6 -3 0 -10 Z"/>
+      </g></g>
+    </g>
+
+    <!-- ============ GLASS STRESS MARKS ============ -->
+    <g fill="none" stroke="#FFFFFF" stroke-width="5">
+      <animate attributeName="opacity" values="0;1;0;.2;.2;.2;.2;1;0;0" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+      <path d="M484 274 l14 -14 M486 300 h18 M484 326 l14 14"/>
+    </g>
+    <g fill="none" stroke="#FFFFFF" stroke-width="3" opacity=".8">
+      <animate attributeName="opacity" values=".5;.9;.2;.5;.5;.5;.5;.9;.3;.5" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+      <path d="M492 344 l10 -8 l-4 12 l10 -4"/>
+    </g>
+
+    <!-- ============ DUST PUFFS ============ -->
+    <g fill="#FFF7E4" stroke="#E3BE80" stroke-width="3">
+      <g transform="translate(436,662)"><g>
+        <animate attributeName="opacity" values="0;0;1;0;0;0;0;1;0;0" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;-18 0;-40 -10;-58 -24;0 0;0 0;0 0;-20 -2;-46 -14;0 0" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="scale" additive="sum" values=".4;.7;1.2;1.5;.4;.4;.4;.7;1.3;.4" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <circle cx="0" cy="0" r="14"/><circle cx="18" cy="-8" r="10"/><circle cx="-16" cy="-6" r="9"/>
+      </g></g>
+      <g transform="translate(686,660)"><g>
+        <animate attributeName="opacity" values="0;0;1;0;0;0;0;1;0;0" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;16 0;36 -10;54 -22;0 0;0 0;0 0;18 -2;42 -12;0 0" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="scale" additive="sum" values=".4;.7;1.2;1.5;.4;.4;.4;.7;1.3;.4" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <circle cx="0" cy="0" r="14"/><circle cx="-18" cy="-8" r="10"/><circle cx="16" cy="-6" r="9"/>
+      </g></g>
+      <g transform="translate(58,650)"><g>
+        <animate attributeName="opacity" values="0;0;.9;0;0;0;0;.9;0;0" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;-10 -2;-26 -12;-44 -22;0 0;0 0;0 0;-12 -4;-32 -16;0 0" keyTimes="0;.16;.24;.34;.52;.62;.68;.74;.84;1" dur="8s" repeatCount="indefinite"/>
+        <circle cx="0" cy="0" r="12"/><circle cx="16" cy="-8" r="9"/>
+      </g></g>
+    </g>
+
+    <!-- effort / motion ticks -->
+    <g fill="none" stroke="#C98F3E" stroke-width="5" opacity=".55">
+      <animate attributeName="opacity" values=".25;.8;.1;.3;.25;.25;.25;.8;.2;.25" keyTimes="0;.12;.24;.38;.52;.62;.68;.72;.86;1" dur="8s" repeatCount="indefinite"/>
+      <path d="M186 396 l-16 -12 M214 380 l-8 -18 M160 414 l-18 -6"/>
+    </g>
+  </g>
+</svg>

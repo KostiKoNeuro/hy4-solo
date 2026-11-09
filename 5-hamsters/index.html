@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Hamster Habitat — A Living Colony</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='18' r='11' fill='%23e0a95c'/%3E%3Ccircle cx='8' cy='8' r='4' fill='%23e39a9a'/%3E%3Ccircle cx='24' cy='8' r='4' fill='%23e39a9a'/%3E%3Ccircle cx='12' cy='17' r='2' fill='%2314161d'/%3E%3Ccircle cx='20' cy='17' r='2' fill='%2314161d'/%3E%3C/svg%3E" />
+<style>
+:root{
+  --bg:#0c111b; --panel:rgba(15,22,35,.80); --line:rgba(190,214,255,.13);
+  --txt:#e9eff8; --dim:#8c9cb2; --gold:#f4c56a; --green:#8fd6a0; --red:#ef8d8d;
+  --blue:#8fc4f5; --pink:#f2a2bd; --amber:#e5b06a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
+  font-family:"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;font-size:13px;
+  -webkit-font-smoothing:antialiased;user-select:none}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;width:100%;height:100%}
+#vignette{position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 44%,transparent 40%,rgba(3,7,15,.6) 100%)}
+#ui{position:fixed;inset:0;pointer-events:none;transition:opacity .35s}
+.panel{position:absolute;pointer-events:auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 14px 44px rgba(0,0,0,.38);padding:12px 14px}
+.cap{font-size:9px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;font-weight:700}
+.sub{color:var(--dim);font-size:11px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.big{font-size:22px;font-weight:700;letter-spacing:.01em;line-height:1.1}
+.num{font-variant-numeric:tabular-nums;font-weight:700}
+.tag{display:inline-block;padding:2px 7px;border-radius:6px;border:1px solid var(--line);
+  font-size:9px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+
+#brand{top:16px;left:16px;width:244px}
+#brand h1{margin:2px 0 1px;font-size:16px;letter-spacing:.16em;font-weight:800;text-transform:uppercase}
+#brand h1 span{color:var(--gold)}
+#brand .sub{font-size:10.5px;letter-spacing:.02em;margin-bottom:10px}
+#clockline{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+#clockline .day{font-size:11px;color:var(--gold);letter-spacing:.1em;font-weight:700}
+#clockline .time{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+#clockline .phase{font-size:9px;letter-spacing:.14em;color:var(--dim);margin-left:auto}
+#cycle{height:5px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:11px}
+#cycle i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f0a86a,#f4d98a,#6f8fd6,#263a72);border-radius:4px}
+.res{margin:7px 0}
+.res .row{margin-bottom:4px}
+.res .val{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{height:7px;border-radius:5px;background:rgba(255,255,255,.09);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;border-radius:5px;transition:width .18s linear}
+#foodBar i{background:linear-gradient(90deg,#c88a4a,#e9c079)}
+#waterBar i{background:linear-gradient(90deg,#3f86c4,#84cdf0)}
+#mood{margin-top:10px;padding-top:9px;border-top:1px solid var(--line);font-size:11px;color:var(--dim)}
+#mood b{color:var(--txt);font-weight:600}
+
+#stats{top:16px;right:16px;width:250px}
+#stats .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 8px;margin:10px 0 8px}
+#stats .cell{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+#stats .cell .v{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
+#stats .cell .k{font-size:9px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+#spark{display:block;width:100%;height:56px;margin-top:4px;border-radius:8px;background:rgba(255,255,255,.03)}
+#stats .foot{margin-top:7px;font-size:10.5px;color:var(--dim)}
+#stats .foot b{color:var(--txt);font-weight:600}
+
+#inspector{right:16px;top:302px;width:250px;display:none;max-height:calc(100vh - 390px);overflow-y:auto}
+#inspector.show{display:block}
+#inspector .name{font-size:19px;font-weight:800;margin:6px 0 2px}
+#inspector .meta{font-size:10.5px;color:var(--dim);margin-bottom:9px}
+#inspector .activity{font-size:11px;background:rgba(244,197,106,.10);border:1px solid rgba(244,197,106,.25);
+  color:var(--gold);border-radius:8px;padding:6px 8px;margin-bottom:10px}
+.need{margin:6px 0}
+.need .row{margin-bottom:3px;font-size:10.5px}
+.need .row span:last-child{font-variant-numeric:tabular-nums;color:var(--dim)}
+.need .bar{height:6px}
+#inspector .parents{font-size:10px;color:var(--dim);margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
+
+#log{left:16px;bottom:76px;width:290px;max-height:186px;overflow:hidden}
+#log .head{margin-bottom:8px}
+#logEntry{display:flex;flex-direction:column;gap:5px}
+.entry{font-size:10.5px;color:#c9d4e4;display:flex;gap:7px;align-items:flex-start;line-height:1.3}
+.entry .t{color:var(--dim);font-variant-numeric:tabular-nums;font-size:9.5px;flex:0 0 46px}
+.dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex:0 0 6px;background:var(--dim)}
+.dot.birth{background:var(--green)} .dot.death{background:#8b93a5}
+.dot.dawn{background:var(--amber)} .dot.pair{background:var(--pink)}
+.dot.arrive{background:var(--blue)} .dot.info{background:var(--gold)}
+
+#controls{left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:8px}
+.btn{pointer-events:auto;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:7px 11px;font-size:11px;font-weight:600;letter-spacing:.03em;cursor:pointer;
+  font-family:inherit;transition:.15s;white-space:nowrap}
+.btn:hover{background:rgba(255,255,255,.12);border-color:rgba(190,214,255,.35)}
+.btn.on{background:rgba(244,197,106,.16);border-color:rgba(244,197,106,.55);color:var(--gold)}
+.btn.icon{padding:7px 10px;font-weight:800}
+.sep{width:1px;height:22px;background:var(--line);margin:0 3px}
+#pauseBtn{min-width:82px}
+#speeds{display:flex;gap:3px}
+#speeds .btn{padding:7px 9px;font-variant-numeric:tabular-nums}
+#badge{position:absolute;top:-28px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.2em;
+  color:var(--gold);text-transform:uppercase;display:none}
+#badge.show{display:block}
+
+#hint{position:absolute;right:16px;bottom:18px;font-size:10px;color:var(--dim);text-align:right;line-height:1.6;pointer-events:none}
+#hint b{color:#c6d2e2;font-weight:600}
+#toast{left:50%;top:18px;transform:translate(-50%,-14px);position:absolute;pointer-events:none;
+  background:rgba(15,22,35,.92);border:1px solid var(--line);border-radius:10px;padding:9px 16px;
+  font-size:12px;font-weight:600;letter-spacing:.02em;opacity:0;transition:.3s;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#tooltip{position:absolute;pointer-events:none;background:rgba(10,16,27,.92);border:1px solid var(--line);
+  border-radius:7px;padding:5px 9px;font-size:10.5px;display:none;white-space:nowrap;z-index:5}
+#tooltip b{font-weight:700} #tooltip span{color:var(--dim);margin-left:7px}
+#help{left:50%;bottom:76px;transform:translateX(-50%);width:230px;display:none;font-size:10.5px;line-height:1.8}
+#help.show{display:block}
+#help .row{justify-content:flex-start;gap:8px}
+kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+  font-family:inherit;font-size:10px;min-width:18px;text-align:center}
+#error{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#0c111b;z-index:50;
+  text-align:center;padding:30px;font-size:14px;line-height:1.6}
+#error.show{display:flex}
+body.clean #ui{opacity:0}
+body.clean #hint{opacity:.45}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="vignette"></div>
+<div id="ui">
+  <div id="brand" class="panel">
+    <div class="cap">A time-lapse colony</div>
+    <h1>Hamster <span>Habitat</span></h1>
+    <div class="sub">A little world that keeps living without you.</div>
+    <div id="clockline"><span class="day" id="dayLabel">DAY 1</span><span class="time" id="clock">06:00</span><span class="phase" id="phaseLabel">DAWN</span></div>
+    <div id="cycle"><i id="cycleFill"></i></div>
+    <div class="res"><div class="row"><span class="cap">Food bowl</span><span class="val" id="foodVal">100%</span></div><div class="bar" id="foodBar"><i></i></div></div>
+    <div class="res"><div class="row"><span class="cap">Water bottle</span><span class="val" id="waterVal">100%</span></div><div class="bar" id="waterBar"><i></i></div></div>
+    <div id="mood">Colony mood: <b id="moodText">Content</b></div>
+  </div>
+
+  <div id="stats" class="panel">
+    <div class="row"><span class="cap">Colony records</span><span class="tag" id="speedTag">x1</span></div>
+    <div class="grid">
+      <div class="cell"><div class="v" id="popVal">6</div><div class="k">Hamsters</div></div>
+      <div class="cell"><div class="v" id="genVal">1</div><div class="k">Generation</div></div>
+      <div class="cell"><div class="v" id="birthVal">0</div><div class="k">Births</div></div>
+      <div class="cell"><div class="v" id="deathVal">0</div><div class="k">Deaths</div></div>
+    </div>
+    <canvas id="spark" width="440" height="112"></canvas>
+    <div class="foot">Population over time &middot; oldest ever <b id="oldestVal">—</b></div>
+    <div class="foot">Wheel laps <b id="lapsVal">0</b> &middot; days survived <b id="daysVal">1</b></div>
+  </div>
+
+  <div id="inspector" class="panel">
+    <div class="row"><span class="cap">Selected hamster</span><span class="tag" id="followTag">FOLLOWING</span></div>
+    <div class="name" id="iName">—</div>
+    <div class="meta" id="iMeta">—</div>
+    <div class="activity" id="iActivity">—</div>
+    <div id="iNeeds"></div>
+    <div class="parents" id="iParents">—</div>
+  </div>
+
+  <div id="log" class="panel">
+    <div class="row head"><span class="cap">Colony log</span><span class="sub" id="logClock">06:00</span></div>
+    <div id="logEntry"></div>
+  </div>
+
+  <div id="controls" class="panel">
+    <div id="badge">Paused</div>
+    <button class="btn" id="pauseBtn">PAUSE</button>
+    <div class="sep"></div>
+    <div id="speeds">
+      <button class="btn" data-speed="0.5">x0.5</button>
+      <button class="btn on" data-speed="1">x1</button>
+      <button class="btn" data-speed="2">x2</button>
+      <button class="btn" data-speed="4">x4</button>
+    </div>
+    <div class="sep"></div>
+    <button class="btn" id="refillBtn">REFILL</button>
+    <button class="btn on" id="autoBtn">AUTO-FEED ON</button>
+    <button class="btn" id="followBtn">FOLLOW</button>
+    <button class="btn" id="viewBtn">VIEW</button>
+    <div class="sep"></div>
+    <button class="btn" id="soundBtn">SOUND OFF</button>
+    <button class="btn icon" id="helpBtn">?</button>
+    <button class="btn icon" id="resetBtn" title="Start a new colony">&#8635;</button>
+  </div>
+
+  <div id="help" class="panel">
+    <div class="cap" style="margin-bottom:7px">Controls</div>
+    <div class="row"><kbd>Drag</kbd><span>Orbit camera</span></div>
+    <div class="row"><kbd>Scroll</kbd><span>Zoom</span></div>
+    <div class="row"><kbd>Click</kbd><span>Follow a hamster</span></div>
+    <div class="row"><kbd>Space</kbd><span>Pause / resume</span></div>
+    <div class="row"><kbd>1-4</kbd><span>Speed x0.5 - x4</span></div>
+    <div class="row"><kbd>R</kbd><span>Refill food &amp; water</span></div>
+    <div class="row"><kbd>F</kbd><span>Toggle follow</span></div>
+    <div class="row"><kbd>C</kbd><span>Reset view</span></div>
+    <div class="row"><kbd>H</kbd><span>Hide interface</span></div>
+    <div class="row"><kbd>Esc</kbd><span>Release selection</span></div>
+  </div>
+
+  <div id="toast"></div>
+  <div id="tooltip"></div>
+  <div id="hint"><b>Click a hamster</b> to follow it<br>Drag to orbit &middot; Scroll to zoom &middot; <b>H</b> hide UI</div>
+</div>
+<div id="error">Could not load Three.js from the CDN.<br>Check your internet connection and reload the page.</div>
+
+<script type="module">
+const CDNS = [
+  'https://unpkg.com/three@0.160.0/build/three.module.js',
+  'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js',
+  'https://esm.sh/three@0.160.0'
+];
+let THREE = null;
+for (const url of CDNS) { try { THREE = await import(url); break; } catch (e) {} }
+if (!THREE) { document.getElementById('error').classList.add('show'); throw new Error('Three.js CDN unavailable'); }
+
+const ERRORS = [];
+window.addEventListener('error', e => { ERRORS.push(String(e.message)); });
+window.addEventListener('unhandledrejection', e => { ERRORS.push(String(e.reason)); });
+
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => v<a?a:(v>b?b:v);
+const lerp = (a,b,t) => a+(b-a)*t;
+const rnd = (a,b) => a+Math.random()*(b-a);
+const chance = p => Math.random() < p;
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const finite = v => Number.isFinite(v);
+
+const DAY_LENGTH = 100;
+const FOOD_MAX = 100;
+const WATER_MAX = 100;
+const MATURE_AGE = 62;
+const MAX_POP = 10;
+const REPRO_LIMIT = 8;
+const FLOOR_Y = 0.45;
+const BOUND = { minX:-8.1, maxX:8.1, minZ:-5.1, maxZ:5.1 };
+const WALL_TOP = 7.0;
+const SAVE_KEY = 'hamster-habitat-save-v1';
+
+const SPOT = {
+  bowl:   { x:-5.3, z:-2.15 },
+  water:  { x:-6.35, z:0.6 },
+  house:  { x:5.2, z:-1.15 },
+  wheel:  { x:5.0, z:2.6 },
+  slideTop:    { x:-1.6, z:3.0 },
+  slideBottom: { x:-3.9, z:1.25 },
+  groom:  { x:0.4, z:-3.3 }
+};
+
+const NAMES = ['Peanut','Mochi','Sesame','Cocoa','Nibbles','Biscuit','Puff','Dumpling','Hazel','Clover','Maple','Poppy','Pebble','Waffle','Truffle','Cashew','Milo','Oat','Sprout','Bean','Tofu','Muffin','Pickle','Nugget','Cinnamon','Pip','Acorn','Bramble','Toffee','Marzipan','Saffron','Basil','Cookie','Pudding','Rye','Fennel','Ginger','Almond','Dill','Quinoa','Bunny','Chestnut','Mallow','Sable','Tansy','Walnut','Zippy','Bubbles','Crumb','Fluff'];
+const FURS = [
+  { fur:0xe0a95c, belly:0xf6e3c0, ear:0xe39a9a },
+  { fur:0xf0d9a8, belly:0xfff3dc, ear:0xe9a7a7 },
+  { fur:0x9ba3ab, belly:0xdfe4e8, ear:0xc98e9a },
+  { fur:0xfaf3e6, belly:0xffffff, ear:0xeaa2a2 },
+  { fur:0x9c6b45, belly:0xe6c9a5, ear:0xd18f8f },
+  { fur:0xd07a3c, belly:0xf3cf9e, ear:0xdd9090 },
+  { fur:0x50505c, belly:0xc2c2cc, ear:0xb3788b },
+  { fur:0xe8c47f, belly:0xf8e8c4, ear:0xe09a9a }
+];
+const STATE_LABEL = {
+  WANDER:'Wandering', EAT:'Eating', DRINK:'Drinking', WHEEL:'Running in the wheel',
+  SLEEP:'Sleeping', SOCIAL:'Socializing', GROOM:'Grooming', DIG:'Digging in the bedding',
+  SLIDE:'Sliding down the ramp'
+};
+const NEED_KEYS = ['hunger','thirst','energy','social','fun','health'];
+const NEED_LABEL = { hunger:'Hunger', thirst:'Thirst', energy:'Energy', social:'Social', fun:'Fun', health:'Health' };
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+$('stage').appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b1226);
+const camera = new THREE.PerspectiveCamera(46, window.innerWidth/window.innerHeight, 0.1, 300);
+const cam = { az:0.72, pol:1.02, radius:27, target:new THREE.Vector3(0,2.1,0), focus:new THREE.Vector3(0,2.1,0) };
+function applyCamera(){
+  const p = clamp(cam.pol, 0.22, 1.46), r = clamp(cam.radius, 8, 52);
+  camera.position.set(
+    cam.target.x + r*Math.sin(p)*Math.sin(cam.az),
+    cam.target.y + r*Math.cos(p),
+    cam.target.z + r*Math.sin(p)*Math.cos(cam.az)
+  );
+  camera.lookAt(cam.target);
+}
+applyCamera();
+
+const hemi = new THREE.HemisphereLight(0xbcd6f0, 0x4a3a2c, 0.8);
+scene.add(hemi);
+const sunLight = new THREE.DirectionalLight(0xffe6b8, 1.3);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.set(1024,1024);
+sunLight.shadow.camera.left = -13; sunLight.shadow.camera.right = 13;
+sunLight.shadow.camera.top = 13; sunLight.shadow.camera.bottom = -13;
+sunLight.shadow.camera.near = 1; sunLight.shadow.camera.far = 70;
+sunLight.shadow.bias = -0.0008;
+scene.add(sunLight, sunLight.target);
+const moonLight = new THREE.DirectionalLight(0x8fa8e8, 0.0);
+scene.add(moonLight);
+const ambient = new THREE.AmbientLight(0x9fb4d8, 0.22);
+scene.add(ambient);
+const houseLight = new THREE.PointLight(0xffb066, 0.0, 7.5, 2);
+houseLight.position.set(5.2, FLOOR_Y+1.1, -2.5);
+scene.add(houseLight);
+
+const flat = (color, extra) => Object.assign(new THREE.MeshStandardMaterial({ color, roughness:0.85, flatShading:true }), extra || {});
+const MAT = {
+  wood:      flat(0x8b613e),
+  woodLight: flat(0xb08355),
+  woodDark:  flat(0x5c3d28),
+  metal:     flat(0x77818f, { metalness:0.55, roughness:0.42 }),
+  metalDark: flat(0x39424e, { metalness:0.5, roughness:0.5 }),
+  ceramic:   flat(0x5b8bb0, { roughness:0.35, metalness:0.1 }),
+  ceramicIn: flat(0x2d4c66, { roughness:0.8 }),
+  bottle:    flat(0xbfe6f5, { transparent:true, opacity:0.34, roughness:0.12, metalness:0.05, side:THREE.DoubleSide, depthWrite:false }),
+  water:     flat(0x67b8e8, { transparent:true, opacity:0.82, roughness:0.15, metalness:0.1 }),
+  bedding:   flat(0xc39b62),
+  pellet:    flat(0xa9793f),
+  door:      flat(0x241a16, { roughness:1 }),
+  rock:      flat(0x8a8b93),
+  leaf:      flat(0x6fa860),
+  cardboard: flat(0xb08a5a, { side:THREE.DoubleSide }),
+  dark:      flat(0x1a2230),
+  eye:       flat(0x14161d, { roughness:0.2 }),
+  nose:      flat(0xe08d9a, { roughness:0.5 }),
+  sun:       new THREE.MeshBasicMaterial({ color:0xffe1a0 }),
+  moon:      new THREE.MeshBasicMaterial({ color:0xdfe8ff }),
+  ring:      new THREE.MeshBasicMaterial({ color:0xf4c56a, transparent:true, opacity:0.85 }),
+  glassFront:flat(0xcfe6f5, { transparent:true, opacity:0.055, roughness:0.1, metalness:0.05, side:THREE.DoubleSide, depthWrite:false }),
+  glassSide: flat(0xcfe6f5, { transparent:true, opacity:0.13, roughness:0.1, metalness:0.05, side:THREE.DoubleSide, depthWrite:false })
+};
+
+const FUR_MATS = FURS.map(f => {
+  const fur = flat(f.fur, { roughness:0.95 });
+  const belly = flat(f.belly, { roughness:0.95 });
+  const ear = flat(f.ear, { roughness:0.9 });
+  const elder = new THREE.Color(f.fur).lerp(new THREE.Color(0x9a9aa2), 0.62);
+  return { fur, belly, ear, elderFur: flat(elder.getHex(), { roughness:0.95 }) };
+});
+
+const G = {
+  body:  new THREE.IcosahedronGeometry(0.5, 1),
+  head:  new THREE.IcosahedronGeometry(0.31, 1),
+  ear:   new THREE.SphereGeometry(0.12, 6, 4),
+  eye:   new THREE.SphereGeometry(0.052, 6, 5),
+  nose:  new THREE.SphereGeometry(0.048, 6, 4),
+  cheek: new THREE.SphereGeometry(0.12, 6, 4),
+  foot:  new THREE.BoxGeometry(0.15, 0.09, 0.22),
+  tail:  new THREE.SphereGeometry(0.085, 6, 4),
+  spark: new THREE.IcosahedronGeometry(1, 0)
+};
+
+function box(w,h,d,mat){ const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat); m.castShadow=true; m.receiveShadow=true; return m; }
+function cyl(rt,rb,h,mat,seg=10){ const m = new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg), mat); m.castShadow=true; m.receiveShadow=true; return m; }
+function rod(a,b,r,mat,seg=6){
+  const dir = new THREE.Vector3().subVectors(b,a), len = dir.length();
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,seg), mat);
+  m.position.copy(a).add(b).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.normalize());
+  m.castShadow = true; return m;
+}
+function plank(a,b,w,t,mat){
+  const dir = new THREE.Vector3().subVectors(b,a), len = dir.length();
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,t,len), mat);
+  m.position.copy(a).add(b).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1), dir.normalize());
+  m.castShadow = true; m.receiveShadow = true; return m;
+}
+
+function buildWorld(){
+  const table = box(19.4, 0.8, 13.6, MAT.woodDark);
+  table.position.y = -0.36; scene.add(table);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(220,220), flat(0x101724,{roughness:1}));
+  ground.rotation.x = -Math.PI/2; ground.position.y = -0.78; ground.receiveShadow=true; scene.add(ground);
+  const bed = box(17.6, 0.5, 11.6, MAT.bedding);
+  bed.position.y = 0.2; scene.add(bed);
+
+  const shaveGeo = new THREE.BoxGeometry(0.34, 0.035, 0.11);
+  const shavings = new THREE.InstancedMesh(shaveGeo, flat(0xffffff,{roughness:1}), 260);
+  const dummy = new THREE.Object3D();
+  const shaveColors = [0xd8b077,0xc79a5f,0xe2c291,0xb98c58,0xcdb184];
+  for (let i=0;i<260;i++){
+    dummy.position.set(rnd(-8.5,8.5), rnd(0.46,0.50), rnd(-5.5,5.5));
+    dummy.rotation.set(rnd(-0.2,0.2), rnd(0,Math.PI*2), rnd(-0.2,0.2));
+    dummy.scale.set(rnd(0.6,1.5),1,rnd(0.7,1.3));
+    dummy.updateMatrix(); shavings.setMatrixAt(i,dummy.matrix);
+    shavings.setColorAt(i,new THREE.Color(pick(shaveColors)));
+  }
+  shavings.instanceMatrix.needsUpdate = true; shavings.instanceColor.needsUpdate = true;
+  shavings.receiveShadow = true; scene.add(shavings);
+
+  const gx = 9.0, gz = 5.9;
+  const corners = [
+    new THREE.Vector3(-gx,0,-gz), new THREE.Vector3(gx,0,-gz),
+    new THREE.Vector3(gx,0,gz), new THREE.Vector3(-gx,0,gz)
+  ];
+  for (let i=0;i<4;i++){
+    scene.add(rod(corners[i],corners[(i+1)%4],0.085,MAT.metalDark));
+    const a = corners[i].clone().setY(WALL_TOP), b = corners[(i+1)%4].clone().setY(WALL_TOP);
+    scene.add(rod(a,b,0.085,MAT.metalDark));
+    scene.add(rod(corners[i],a,0.085,MAT.metalDark));
+  }
+  const wallDefs = [
+    { w:2*gx, h:WALL_TOP, pos:[0,WALL_TOP/2,-gz], ry:0, mat:MAT.glassSide },
+    { w:2*gx, h:WALL_TOP, pos:[0,WALL_TOP/2, gz], ry:0, mat:MAT.glassFront },
+    { w:2*gz, h:WALL_TOP, pos:[-gx,WALL_TOP/2,0], ry:Math.PI/2, mat:MAT.glassSide },
+    { w:2*gz, h:WALL_TOP, pos:[ gx,WALL_TOP/2,0], ry:Math.PI/2, mat:MAT.glassSide }
+  ];
+  for (const d of wallDefs){
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(d.w,d.h), d.mat);
+    m.position.set(...d.pos); m.rotation.y = d.ry; m.renderOrder = 3; scene.add(m);
+  }
+  const lidPts = [];
+  for (let x=-gx; x<=gx+0.01; x+=1.2) lidPts.push(x,WALL_TOP,-gz, x,WALL_TOP,gz);
+  for (let z=-gz; z<=gz+0.01; z+=1.2) lidPts.push(-gx,WALL_TOP,z, gx,WALL_TOP,z);
+  const lidGeo = new THREE.BufferGeometry();
+  lidGeo.setAttribute('position', new THREE.Float32BufferAttribute(lidPts,3));
+  scene.add(new THREE.LineSegments(lidGeo, new THREE.LineBasicMaterial({ color:0x8b97a8, transparent:true, opacity:0.5 })));
+
+  const bowl = new THREE.Group(); bowl.position.set(-5.3, FLOOR_Y, -3.4);
+  const bowlOuter = cyl(1.05,0.82,0.55,MAT.ceramic,14); bowlOuter.position.y=0.275; bowl.add(bowlOuter);
+  const bowlRim = new THREE.Mesh(new THREE.TorusGeometry(1.0,0.07,6,16), MAT.ceramic);
+  bowlRim.rotation.x = Math.PI/2; bowlRim.position.y = 0.55; bowl.add(bowlRim);
+  const bowlIn = new THREE.Mesh(new THREE.CircleGeometry(0.9,16), MAT.ceramicIn);
+  bowlIn.rotation.x = -Math.PI/2; bowlIn.position.y = 0.5; bowl.add(bowlIn);
+  scene.add(bowl);
+
+  const PELLETS = 64;
+  const pellets = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.105,0), MAT.pellet, PELLETS);
+  const pColors = [0xa9793f,0xc09355,0x8e6736,0xb98a4b];
+  for (let i=0;i<PELLETS;i++){
+    const r = 0.82*Math.sqrt(Math.random()), a = Math.random()*Math.PI*2;
+    dummy.position.set(Math.cos(a)*r, 0.06 + (1-r/0.82)*0.30 + rnd(0,0.07), Math.sin(a)*r);
+    dummy.rotation.set(rnd(0,6),rnd(0,6),rnd(0,6)); dummy.scale.setScalar(rnd(0.8,1.2));
+    dummy.updateMatrix(); pellets.setMatrixAt(i,dummy.matrix);
+    pellets.setColorAt(i,new THREE.Color(pick(pColors)));
+  }
+  pellets.instanceMatrix.needsUpdate = true; pellets.instanceColor.needsUpdate = true;
+  pellets.castShadow = true; bowl.add(pellets);
+
+  const bottle = new THREE.Group(); bottle.position.set(-8.15, FLOOR_Y+1.72, 0.6);
+  const glassOuter = cyl(0.5,0.5,2.35,MAT.bottle,12); bottle.add(glassOuter);
+  const waterInner = cyl(0.42,0.42,2.0,MAT.water,12); bottle.add(waterInner);
+  const cap = cyl(0.55,0.55,0.2,MAT.metal,12); cap.position.y=1.24; bottle.add(cap);
+  const bottom = cyl(0.52,0.52,0.12,MAT.metalDark,12); bottom.position.y=-1.18; bottle.add(bottom);
+  bottle.add(rod(new THREE.Vector3(0,-1.14,0), new THREE.Vector3(1.48,-1.34,0), 0.075, MAT.metal, 8));
+  const nozzle = new THREE.Mesh(new THREE.SphereGeometry(0.105,8,6), MAT.metal);
+  nozzle.position.set(1.48,-1.34,0); bottle.add(nozzle);
+  const bracket = box(0.18,0.7,0.9,MAT.metalDark); bracket.position.set(-0.5,0.2,0); bottle.add(bracket);
+  scene.add(bottle);
+
+  const house = new THREE.Group(); house.position.set(5.2, FLOOR_Y, -3.25);
+  const walls = box(3.0,2.0,2.6,MAT.wood); walls.position.y=1.0; house.add(walls);
+  const roofL = box(1.95,0.16,2.95,MAT.woodLight); roofL.position.set(-0.85,2.28,0); roofL.rotation.z=0.58; house.add(roofL);
+  const roofR = box(1.95,0.16,2.95,MAT.woodLight); roofR.position.set(0.85,2.28,0); roofR.rotation.z=-0.58; house.add(roofR);
+  const door = new THREE.Mesh(new THREE.CircleGeometry(0.72,18), MAT.door);
+  door.position.set(0,0.78,1.305); house.add(door);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(0.75,0.085,6,18), MAT.woodDark);
+  arch.position.set(0,0.78,1.315); house.add(arch);
+  const step = box(1.7,0.12,0.6,MAT.woodDark); step.position.set(0,0.06,1.55); house.add(step);
+  const chimney = box(0.42,0.7,0.42,MAT.woodDark); chimney.position.set(0.9,2.55,-0.6); house.add(chimney);
+  scene.add(house);
+
+  const wheelCenter = new THREE.Vector3(5.0, FLOOR_Y+1.82, 2.6);
+  const wheelSpin = new THREE.Group(); wheelSpin.position.copy(wheelCenter);
+  for (const zz of [-0.55,0.55]){
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(1.6,0.11,6,24), MAT.metal);
+    rim.position.z = zz; rim.castShadow=true; wheelSpin.add(rim);
+  }
+  for (let i=0;i<16;i++){
+    const a = i/16*Math.PI*2;
+    const rung = box(0.09,0.1,1.12,MAT.metal);
+    rung.position.set(Math.cos(a)*1.56, Math.sin(a)*1.56, 0);
+    rung.rotation.z = a; rung.castShadow=true; wheelSpin.add(rung);
+  }
+  for (let i=0;i<6;i++){
+    const a = i/6*Math.PI*2;
+    const spoke = box(0.07,3.1,0.07,MAT.metalDark);
+    spoke.rotation.z = a; wheelSpin.add(spoke);
+  }
+  const axle = cyl(0.09,0.09,1.5,MAT.metalDark,8); axle.rotation.x=Math.PI/2; wheelSpin.add(axle);
+  scene.add(wheelSpin);
+  const standL = box(0.22,1.9,0.25,MAT.metalDark); standL.position.set(wheelCenter.x, FLOOR_Y+0.95, wheelCenter.z-0.92); scene.add(standL);
+  const standR = box(0.22,1.9,0.25,MAT.metalDark); standR.position.set(wheelCenter.x, FLOOR_Y+0.95, wheelCenter.z+0.92); scene.add(standR);
+  const footA = box(0.5,0.14,1.1,MAT.metalDark); footA.position.set(wheelCenter.x, FLOOR_Y+0.07, wheelCenter.z-0.6); scene.add(footA);
+  const footB = box(0.5,0.14,1.1,MAT.metalDark); footB.position.set(wheelCenter.x, FLOOR_Y+0.07, wheelCenter.z+0.6); scene.add(footB);
+
+  const rampA = new THREE.Vector3(-1.6, FLOOR_Y+1.45, 3.2);
+  const rampB = new THREE.Vector3(-3.9, FLOOR_Y+0.06, 1.25);
+  scene.add(plank(rampA,rampB,1.45,0.13,MAT.woodLight));
+  const railGeoL = plank(rampA.clone().add(new THREE.Vector3(-0.78,0.14,0)), rampB.clone().add(new THREE.Vector3(-0.78,0.14,0)), 0.09,0.22,MAT.wood);
+  const railGeoR = plank(rampA.clone().add(new THREE.Vector3(0.78,0.14,0)), rampB.clone().add(new THREE.Vector3(0.78,0.14,0)), 0.09,0.22,MAT.wood);
+  scene.add(railGeoL, railGeoR);
+  const platform = box(2.0,0.16,1.9,MAT.woodLight); platform.position.set(-1.6, FLOOR_Y+1.38, 3.85); scene.add(platform);
+  for (const dx of [-0.8,0.8]) for (const dz of [-0.7,0.7]){
+    const leg = box(0.16,1.4,0.16,MAT.woodDark); leg.position.set(-1.6+dx, FLOOR_Y+0.7, 3.85+dz); scene.add(leg);
+  }
+
+  const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,2.4,10,1,true), MAT.cardboard);
+  tube.rotation.z = Math.PI/2; tube.position.set(0.9, FLOOR_Y+0.56, -3.9); tube.castShadow=true; scene.add(tube);
+  for (let i=0;i<5;i++){
+    const rock = new THREE.Mesh(new THREE.IcosahedronGeometry(rnd(0.16,0.34),0), MAT.rock);
+    rock.position.set(rnd(-7.6,-6.6), FLOOR_Y+0.12, rnd(-4.8,-3.9)); rock.castShadow=true; scene.add(rock);
+  }
+  for (let i=0;i<4;i++){
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.16,0.62,5), MAT.leaf);
+    leaf.position.set(rnd(1.2,2.6), FLOOR_Y+0.31, rnd(3.6,4.6)); leaf.rotation.z=rnd(-0.35,0.35); scene.add(leaf);
+  }
+
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.8,0.035,4,28), MAT.ring);
+  ring.rotation.x = -Math.PI/2; ring.visible = false; ring.renderOrder = 4; scene.add(ring);
+
+  return { pellets, waterInner, wheelSpin, ring, bottle, bowl };
+}
+const WORLD = buildWorld();
+
+const starPos = [];
+for (let i=0;i<220;i++){
+  const a = Math.random()*Math.PI*2, r = rnd(20,70), y = rnd(8,55);
+  starPos.push(Math.cos(a)*r, y, Math.sin(a)*r);
+}
+const starGeo = new THREE.BufferGeometry();
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos,3));
+const starMat = new THREE.PointsMaterial({ color:0xdfe8ff, size:0.42, transparent:true, opacity:0, depthWrite:false, sizeAttenuation:true });
+scene.add(new THREE.Points(starGeo, starMat));
+const sunMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5,1), MAT.sun); scene.add(sunMesh);
+const moonMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.05,1), MAT.moon); scene.add(moonMesh);
+const motePos = new Float32Array(70*3);
+for (let i=0;i<70;i++){ motePos[i*3]=rnd(-9,9); motePos[i*3+1]=rnd(0.8,6); motePos[i*3+2]=rnd(-6,6); }
+const moteGeo = new THREE.BufferGeometry();
+moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos,3));
+const moteMat = new THREE.PointsMaterial({ color:0xffe9bd, size:0.075, transparent:true, opacity:0.35, depthWrite:false, blending:THREE.AdditiveBlending });
+scene.add(new THREE.Points(moteGeo, moteMat));
+
+const PARTICLE_MATS = {
+  gold:  new THREE.MeshBasicMaterial({ color:0xffd27f, transparent:true, opacity:0.95, depthWrite:false, blending:THREE.AdditiveBlending }),
+  blue:  new THREE.MeshBasicMaterial({ color:0x86ccff, transparent:true, opacity:0.95, depthWrite:false, blending:THREE.AdditiveBlending }),
+  pink:  new THREE.MeshBasicMaterial({ color:0xff9dc0, transparent:true, opacity:0.95, depthWrite:false, blending:THREE.AdditiveBlending }),
+  white: new THREE.MeshBasicMaterial({ color:0xe6ecf7, transparent:true, opacity:0.9, depthWrite:false, blending:THREE.AdditiveBlending }),
+  brown: new THREE.MeshBasicMaterial({ color:0xc99a63, transparent:true, opacity:0.85, depthWrite:false, blending:THREE.AdditiveBlending })
+};
+const POOL = [];
+for (let i=0;i<100;i++){
+  const mesh = new THREE.Mesh(G.spark, PARTICLE_MATS.gold);
+  mesh.visible = false; mesh.renderOrder = 5; scene.add(mesh);
+  POOL.push({ mesh, life:0, max:1, vx:0, vy:0, vz:0, size:0.09 });
+}
+function spark(pos, color, count, spread=0.5, up=1){
+  if (S.quiet) return;
+  for (let i=0;i<count;i++){
+    let slot = null;
+    for (const p of POOL) if (p.life<=0) { slot=p; break; }
+    if (!slot) return;
+    slot.mesh.material = PARTICLE_MATS[color] || PARTICLE_MATS.gold;
+    slot.mesh.position.set(pos.x+rnd(-spread,spread), pos.y+rnd(0,spread), pos.z+rnd(-spread,spread));
+    slot.vx = rnd(-0.7,0.7); slot.vy = rnd(0.4,1.5)*up; slot.vz = rnd(-0.7,0.7);
+    slot.max = rnd(0.7,1.5); slot.life = slot.max; slot.size = rnd(0.06,0.13);
+    slot.mesh.scale.setScalar(slot.size); slot.mesh.visible = true;
+  }
+}
+function v3(x,y,z){ return { x, y, z }; }
+
+const S = {
+  simTime: 0, speed: 1, paused: false, quiet: false,
+  food: FOOD_MAX, water: WATER_MAX, autoFeed: true,
+  births: 0, deaths: 0, maxGen: 1, wheelLaps: 0,
+  longestLife: { name:'—', days:0 },
+  hamsters: [], nextId: 1, usedNames: [],
+  wheelUserId: null, wheelAngle: 0, wheelRunning: false,
+  lastDayIndex: 0, lonelyTimer: 0,
+  popHistory: [], historyTimer: 0,
+  log: [], selectedId: null, followId: null, hoverId: null,
+  soundOn: false, uiTimer: 0, toastQueue: [], toastText:'', toastUntil:0,
+  errors: ERRORS
+};
+window.HABITAT = { raw:S, errors:ERRORS, debug:{} };
+
+function alive(){ return S.hamsters.filter(h=>!h.dead); }
+function byId(id){ for (const h of S.hamsters) if (h.id===id && !h.dead) return h; return null; }
+function dayIndex(){ return Math.floor(S.simTime / DAY_LENGTH) + 1; }
+function phase(){ return (S.simTime % DAY_LENGTH) / DAY_LENGTH; }
+function dayFactor(){ return clamp(0.5 + 0.75*Math.cos(2*Math.PI*(phase()-0.27)), 0, 1); }
+function sunElevation(){ return Math.cos(2*Math.PI*(phase()-0.27)); }
+function isNight(){ return dayFactor() < 0.26; }
+function clockMinutes(){ return (360 + phase()*1440) % 1440; }
+function clockString(){ const t=clockMinutes(), h=Math.floor(t/60), m=Math.floor(t%60); return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); }
+function phaseLabel(){
+  const p = phase();
+  if (p < 0.09) return 'DAWN';
+  if (p < 0.44) return 'DAY';
+  if (p < 0.56) return 'DUSK';
+  return 'NIGHT';
+}
+
+let audioCtx = null;
+function chime(kind){
+  if (!S.soundOn || S.quiet) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const notes = kind==='birth' ? [660,880,1175] : kind==='death' ? [330,247] : kind==='dawn' ? [523,659,784] : [880];
+    notes.forEach((f,i) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      const t = audioCtx.currentTime + i*0.13;
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.075,t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.32);
+      o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.35);
+    });
+  } catch(e) {}
+}
+
+function showToast(text, color='gold'){
+  if (S.quiet) return;
+  if (S.toastQueue.length > 4) S.toastQueue.shift();
+  S.toastQueue.push({ text, color });
+}
+function addLog(text, type='info'){
+  S.log.unshift({ t:'D'+dayIndex()+' '+clockString(), text, type });
+  if (S.log.length > 30) S.log.length = 30;
+}
+
+function makeName(){
+  const free = NAMES.filter(n => !S.usedNames.includes(n));
+  if (free.length){ const n = pick(free); S.usedNames.push(n); return n; }
+  const base = pick(NAMES);
+  let i = 2;
+  while (S.usedNames.includes(base+' '+i)) i++;
+  const n = base+' '+i; S.usedNames.push(n); return n;
+}
+
+function buildHamsterMesh(pal){
+  const root = new THREE.Group();
+  const body = new THREE.Group(); root.add(body);
+  const m = FUR_MATS[pal];
+  const parts = { body, head:new THREE.Group(), eyes:[], feet:[], cheeks:[], ears:[] };
+  const bodyMesh = new THREE.Mesh(G.body, m.fur);
+  bodyMesh.scale.set(1,0.82,1.24); bodyMesh.position.y=0.46; bodyMesh.castShadow=true; body.add(bodyMesh);
+  parts.bodyMesh = bodyMesh;
+  const belly = new THREE.Mesh(G.body, m.belly);
+  belly.scale.set(0.86,0.52,1.06); belly.position.set(0,0.29,0.1); body.add(belly);
+  const patch = new THREE.Mesh(G.body, m.belly);
+  patch.scale.set(0.92,0.7,0.72); patch.position.set(0,0.55,-0.3); body.add(patch);
+  parts.head.position.set(0,0.66,0.42); body.add(parts.head);
+  const headMesh = new THREE.Mesh(G.head, m.fur);
+  headMesh.scale.set(1,0.96,0.96); headMesh.castShadow=true; parts.head.add(headMesh);
+  parts.headMesh = headMesh;
+  for (const sx of [-1,1]){
+    const ear = new THREE.Mesh(G.ear, m.ear);
+    ear.position.set(sx*0.21,0.21,-0.02); ear.scale.set(1,1.15,0.55); parts.head.add(ear); parts.ears.push(ear);
+    const eye = new THREE.Mesh(G.eye, MAT.eye);
+    eye.position.set(sx*0.125,0.025,0.262); parts.head.add(eye); parts.eyes.push(eye);
+    const cheek = new THREE.Mesh(G.cheek, m.belly);
+    cheek.position.set(sx*0.2,-0.075,0.205); cheek.scale.set(1,0.85,0.9); parts.head.add(cheek); parts.cheeks.push(cheek);
+  }
+  const nose = new THREE.Mesh(G.nose, MAT.nose); nose.position.set(0,-0.055,0.315); parts.head.add(nose);
+  for (let i=0;i<4;i++){
+    const f = new THREE.Mesh(G.foot, m.ear);
+    f.position.set((i%2?1:-1)*0.26, 0.085, (i<2?0.34:-0.34)); body.add(f); parts.feet.push(f);
+  }
+  const tail = new THREE.Mesh(G.tail, m.belly); tail.position.set(0,0.38,-0.6); body.add(tail);
+  root.userData.parts = parts;
+  return root;
+}
+
+function newHamster(opts={}){
+  if (alive().length >= MAX_POP) return null;
+  const id = S.nextId++;
+  const h = {
+    id, name: opts.name || makeName(),
+    gender: opts.gender || (chance(0.5)?'M':'F'),
+    palette: opts.palette !== undefined ? opts.palette : Math.floor(Math.random()*FURS.length),
+    birthTime: opts.birthTime !== undefined ? opts.birthTime : S.simTime,
+    lifespan: opts.lifespan || rnd(380,560),
+    gen: opts.gen || 1, mother: opts.mother || null, father: opts.father || null,
+    pos: { x: opts.x !== undefined ? opts.x : rnd(-6,6), z: opts.z !== undefined ? opts.z : rnd(-4,4) },
+    heading: rnd(0,6.28), target: { x:0, z:0 },
+    state: 'WANDER', phase: 'go', timer:0, duration:0, pathT:0,
+    needs: opts.needs ? Object.assign({}, opts.needs) : { hunger:rnd(0.65,0.95), thirst:rnd(0.65,0.95), energy:rnd(0.6,0.95), social:rnd(0.5,0.9), fun:rnd(0.45,0.85) },
+    health: 1, partnerId:null, pregnantUntil:0, pregnantBy:null, nextMateAt:0,
+    size: 0.42, height: 0, moving:false, elderApplied:false, dead:false, lastState:''
+  };
+  h.mesh = buildHamsterMesh(h.palette);
+  h.mesh.userData.hamsterId = id;
+  h.mesh.position.set(h.pos.x, FLOOR_Y, h.pos.z);
+  h.mesh.scale.setScalar(h.size);
+  scene.add(h.mesh);
+  S.hamsters.push(h);
+  setState(h, 'WANDER');
+  return h;
+}
+
+function randomPoint(){
+  return { x: rnd(BOUND.minX+0.7, BOUND.maxX-0.7), z: rnd(BOUND.minZ+0.7, BOUND.maxZ-0.7) };
+}
+function spotNear(s, r=0.4){ return { x: clamp(s.x+rnd(-r,r),BOUND.minX+0.5,BOUND.maxX-0.5), z: clamp(s.z+rnd(-r,r),BOUND.minZ+0.5,BOUND.maxZ-0.5) }; }
+
+function setState(h, state){
+  if (h.dead) return;
+  if (h.state === 'WHEEL' && S.wheelUserId === h.id) S.wheelUserId = null;
+  const pid = h.partnerId;
+  h.partnerId = null;
+  if (pid !== null) {
+    const p = byId(pid);
+    if (p && p.partnerId === h.id) {
+      p.partnerId = null;
+      if (p.state === 'SOCIAL') setState(p, 'WANDER');
+    }
+  }
+  h.lastState = h.state;
+  h.state = state; h.phase = 'go'; h.timer = 0; h.pathT = 0; h.height = 0; h.duration = 0; h.moving = false;
+  switch(state){
+    case 'EAT':   h.target = spotNear(SPOT.bowl,0.22); h.duration = 13; break;
+    case 'DRINK': h.target = spotNear(SPOT.water,0.2); h.duration = 10; break;
+    case 'WHEEL':
+      S.wheelUserId = h.id; h.target = { x:SPOT.wheel.x, z:SPOT.wheel.z }; h.duration = rnd(14,30); break;
+    case 'SLEEP': h.target = spotNear(SPOT.house,0.55); h.duration = rnd(20,38); break;
+    case 'SOCIAL': h.target = { x:h.pos.x, z:h.pos.z }; h.duration = rnd(7,11); break;
+    case 'SLIDE': h.target = { x:SPOT.slideTop.x, z:SPOT.slideTop.z }; h.duration = 2.8; break;
+    case 'GROOM': h.target = { x:h.pos.x, z:h.pos.z }; h.phase='act'; h.duration = rnd(4,8); break;
+    case 'DIG':   h.target = randomPoint(); h.duration = rnd(4,8); break;
+    default: {
+      const mom = h.mother ? byId(h.mother) : null;
+      h.target = (S.simTime - h.birthTime < 34 && mom && chance(0.6)) ? spotNear(mom.pos,0.9) : randomPoint();
+      h.duration = rnd(3,7);
+    }
+  }
+}
+
+function chooseState(h){
+  const n = h.needs, age = S.simTime - h.birthTime, pop = alive().length;
+  if (n.thirst < 0.42 && S.water > 1) return setState(h,'DRINK');
+  if (n.hunger < 0.42 && S.food > 1) return setState(h,'EAT');
+  if (n.energy < 0.27) return setState(h,'SLEEP');
+  if (pop <= 3 && age > MATURE_AGE && n.energy > 0.32 && chance(0.8)) { startSocial(h); return; }
+  if (isNight() && n.energy < 0.62 && chance(0.45)) return setState(h,'SLEEP');
+  if (n.fun < 0.4 && S.wheelUserId === null && age > MATURE_AGE && chance(0.65)) return setState(h,'WHEEL');
+  if (n.social < 0.62 && pop > 1 && (chance(0.82) || pop < 5)) return startSocial(h);
+  const r = Math.random();
+  if (r < (isNight()?0.14:0.09) && age > 25) return setState(h,'SLIDE');
+  if (r < 0.26) return setState(h,'DIG');
+  if (r < 0.40) return setState(h,'GROOM');
+  if (r < 0.52 && n.fun < 0.6 && age > 25) return setState(h,'SLIDE');
+  return setState(h,'WANDER');
+}
+
+function startSocial(h){
+  const candidates = alive().filter(o => o !== h && o.partnerId === null && !['WHEEL','SLEEP','SOCIAL'].includes(o.state));
+  if (!candidates.length) return setState(h,'WANDER');
+  candidates.sort((a,b) => {
+    const da = (a.pos.x-h.pos.x)**2+(a.pos.z-h.pos.z)**2;
+    const db = (b.pos.x-h.pos.x)**2+(b.pos.z-h.pos.z)**2;
+    return (a.gender!==h.gender?-4:0) + da*0.1 - ((b.gender!==h.gender?-4:0) + db*0.1);
+  });
+  const p = chance(0.65) ? candidates[0] : pick(candidates);
+  const mid = { x:(h.pos.x+p.pos.x)/2, z:(h.pos.z+p.pos.z)/2 };
+  setState(h,'SOCIAL'); setState(p,'SOCIAL');
+  h.partnerId = p.id; p.partnerId = h.id;
+  h.target = { x:clamp(mid.x+0.42,BOUND.minX+0.5,BOUND.maxX-0.5), z:mid.z };
+  p.target = { x:clamp(mid.x-0.42,BOUND.minX+0.5,BOUND.maxX-0.5), z:mid.z };
+  h.duration = rnd(7,11); p.duration = h.duration;
+}
+
+function tryMate(a,b){
+  const f = a.gender==='F' ? a : (b.gender==='F' ? b : null);
+  if (!f) return;
+  const m = f===a ? b : a;
+  if (m.gender !== 'M') return;
+  const af = S.simTime - a.birthTime, bf = S.simTime - b.birthTime;
+  if (af < MATURE_AGE || bf < MATURE_AGE) return;
+  if (f.pregnantUntil > 0 || S.simTime < f.nextMateAt) return;
+  const pop = alive().length;
+  if (pop >= REPRO_LIMIT || S.food < 20 || S.water < 20) return;
+  const density = clamp((REPRO_LIMIT - pop)/4, 0.12, 1);
+  const urgency = pop <= 3 ? 1.6 : (pop <= 5 ? 1.3 : 1);
+  if (Math.random() < clamp(0.85*density*urgency, 0, 1)) {
+    f.pregnantUntil = S.simTime + rnd(30,42);
+    f.pregnantBy = m.id;
+    addLog(f.name+' and '+m.name+' are expecting pups','pair');
+    spark(v3(f.pos.x,FLOOR_Y+1.0,f.pos.z),'pink',7,0.35,1.2);
+  }
+}
+
+function giveBirth(mother){
+  const dadId = mother.pregnantBy;
+  mother.pregnantUntil = 0; mother.pregnantBy = null;
+  mother.nextMateAt = S.simTime + 40;
+  const popNow = alive().length;
+  const litter = Math.min(pick(popNow <= 3 ? [2,3,3,3] : [1,2,2,3,3]), Math.max(0, MAX_POP - popNow));
+  let born = 0;
+  for (let i=0;i<litter;i++){
+    if (alive().length >= MAX_POP) break;
+    const baby = newHamster({
+      x: clamp(SPOT.house.x+rnd(-1,1),BOUND.minX+0.6,BOUND.maxX-0.6),
+      z: clamp(SPOT.house.z+rnd(-0.8,0.8),BOUND.minZ+0.6,BOUND.maxZ-0.6),
+      gen: mother.gen+1, mother: mother.id, father: dadId || null,
+      needs:{ hunger:0.78, thirst:0.82, energy:0.86, social:0.72, fun:0.62 }
+    });
+    if (!baby) break;
+    baby.pos.x = clamp(baby.pos.x,BOUND.minX+0.6,BOUND.maxX-0.6);
+    born++;
+  }
+  if (!born) return;
+  S.births += born;
+  if (mother.gen+1 > S.maxGen) {
+    S.maxGen = mother.gen+1;
+    addLog('Generation '+S.maxGen+' begins','info');
+    showToast('Generation '+S.maxGen+' begins','gold');
+  }
+  addLog(mother.name+' had '+born+' pup'+(born>1?'s':''),'birth');
+  showToast(born+' pup'+(born>1?'s':'')+' born to '+mother.name,'green');
+  spark(v3(SPOT.house.x,FLOOR_Y+0.9,SPOT.house.z),'gold',14,0.8,1.1);
+  chime('birth');
+}
+
+function kill(h, cause){
+  if (h.dead) return;
+  h.dead = true;
+  if (S.wheelUserId === h.id) S.wheelUserId = null;
+  const pid = h.partnerId;
+  h.partnerId = null;
+  if (pid !== null) {
+    const p = byId(pid);
+    if (p && p.partnerId === h.id) { p.partnerId = null; if (p.state==='SOCIAL') setState(p,'WANDER'); }
+  }
+  scene.remove(h.mesh);
+  S.deaths++;
+  const days = (S.simTime - h.birthTime)/DAY_LENGTH;
+  if (days > S.longestLife.days) S.longestLife = { name:h.name, days };
+  addLog(h.name+' passed away at '+days.toFixed(1)+'d'+(cause?' ('+cause+')':'')+' · gen '+h.gen,'death');
+  showToast(h.name+' passed away at '+days.toFixed(1)+' days','white');
+  spark(v3(h.pos.x,FLOOR_Y+0.9,h.pos.z),'white',16,0.55,1.4);
+  chime('death');
+  if (S.selectedId === h.id) clearSelection();
+  if (S.followId === h.id) S.followId = null;
+  if (S.hoverId === h.id) S.hoverId = null;
+}
+
+function arrival(count, gender){
+  for (let i=0;i<count;i++){
+    if (alive().length >= MAX_POP) break;
+    const h = newHamster({
+      birthTime: S.simTime - rnd(90,150),
+      gender: gender || (count===2 ? (i===0?'M':'F') : (chance(0.5)?'M':'F')),
+      x: rnd(-7,-6), z: rnd(-1,1),
+      needs:{ hunger:0.8, thirst:0.8, energy:0.8, social:0.7, fun:0.6 }
+    });
+    if (h) spark(v3(h.pos.x,FLOOR_Y+0.8,h.pos.z),'blue',8,0.5,1);
+  }
+  addLog(count+' new hamster'+(count>1?'s':'')+' arrived at the cage','arrive');
+  showToast('A new arrival joined the colony','blue');
+}
+
+function moveToward(h, dt){
+  const dx = h.target.x-h.pos.x, dz = h.target.z-h.pos.z;
+  const d = Math.hypot(dx,dz);
+  if (d < 0.22) { h.moving = false; return true; }
+  const sp = (S.simTime - h.birthTime < MATURE_AGE ? 1.25 : (h.elder ? 1.05 : 1.75)) * dt;
+  const step = Math.min(sp, d);
+  h.pos.x = clamp(h.pos.x + dx/d*step, BOUND.minX+0.45, BOUND.maxX-0.45);
+  h.pos.z = clamp(h.pos.z + dz/d*step, BOUND.minZ+0.45, BOUND.maxZ-0.45);
+  h.heading = Math.atan2(dx,dz);
+  h.moving = true;
+  return false;
+}
+
+function runState(h, dt){
+  const n = h.needs;
+  if (n.thirst < 0.13 && S.water > 0.5 && h.state !== 'DRINK') { setState(h,'DRINK'); return; }
+  if (n.hunger < 0.13 && S.food > 0.5 && h.state !== 'EAT') { setState(h,'EAT'); return; }
+  if (n.energy < 0.09 && h.state !== 'SLEEP') { setState(h,'SLEEP'); return; }
+  h.timer += dt;
+  if (h.phase === 'go'){
+    if (moveToward(h,dt) || h.timer > 12){ h.phase='act'; h.timer=0; h.moving=false; }
+    return;
+  }
+  switch(h.state){
+    case 'EAT':
+      if (S.food <= 0 || n.hunger >= 0.96 || h.timer > h.duration) { chooseState(h); break; }
+      n.hunger = clamp(n.hunger + 0.105*dt, 0, 1);
+      S.food = Math.max(0, S.food - 1.55*dt);
+      h.heading = Math.PI;
+      if (chance(dt*2.2)) spark(v3(SPOT.bowl.x,FLOOR_Y+0.65,SPOT.bowl.z-0.6),'brown',1,0.25,0.7);
+      break;
+    case 'DRINK':
+      if (S.water <= 0 || n.thirst >= 0.96 || h.timer > h.duration) { chooseState(h); break; }
+      n.thirst = clamp(n.thirst + 0.135*dt, 0, 1);
+      S.water = Math.max(0, S.water - 1.15*dt);
+      h.heading = -Math.PI/2;
+      if (chance(dt*2.5)) spark(v3(-6.67,FLOOR_Y+0.9,0.6),'blue',1,0.08,0.25);
+      break;
+    case 'SLEEP':
+      n.energy = clamp(n.energy + 0.029*dt, 0, 1);
+      h.heading = Math.PI;
+      if (n.energy >= 0.96 || h.timer > h.duration) { chooseState(h); break; }
+      if (chance(dt*0.45)) spark(v3(h.pos.x,FLOOR_Y+1.25,h.pos.z),'white',1,0.14,0.6);
+      break;
+    case 'WHEEL': {
+      S.wheelRunning = true;
+      n.fun = clamp(n.fun + 0.058*dt, 0, 1);
+      n.energy = clamp(n.energy - 0.013*dt, 0, 1);
+      h.pos.x = SPOT.wheel.x; h.pos.z = SPOT.wheel.z;
+      h.height = 0.22; h.heading = Math.PI/2; h.moving = true;
+      S.wheelLaps += dt*0.55;
+      if (h.timer > h.duration || n.fun >= 0.99 || n.energy < 0.2) chooseState(h);
+      break;
+    }
+    case 'SOCIAL': {
+      const p = byId(h.partnerId);
+      if (!p || p.state !== 'SOCIAL') { chooseState(h); break; }
+      if (h.phase === 'act' && h.timer < dt*1.5 && h.id < p.id) tryMate(h,p);
+      n.social = clamp(n.social + 0.075*dt, 0, 1);
+      h.heading = Math.atan2(p.pos.x-h.pos.x, p.pos.z-h.pos.z);
+      if (h.timer > h.duration) {
+        const partner = p;
+        setState(h,'WANDER'); setState(partner,'WANDER');
+      }
+      break;
+    }
+    case 'SLIDE': {
+      const t = clamp(h.timer/2.8, 0, 1), e = t*t*(3-2*t);
+      h.pos.x = lerp(SPOT.slideTop.x, SPOT.slideBottom.x, e);
+      h.pos.z = lerp(SPOT.slideTop.z, SPOT.slideBottom.z, e);
+      h.height = lerp(1.45, 0.03, e);
+      h.heading = Math.atan2(SPOT.slideBottom.x-SPOT.slideTop.x, SPOT.slideBottom.z-SPOT.slideTop.z);
+      n.fun = clamp(n.fun + 0.05*dt, 0, 1);
+      h.moving = true;
+      if (chance(dt*3)) spark(v3(h.pos.x,FLOOR_Y+h.height,h.pos.z),'brown',1,0.2,0.5);
+      if (t >= 1) chooseState(h);
+      break;
+    }
+    case 'GROOM':
+      n.fun = clamp(n.fun + 0.018*dt, 0, 1);
+      if (h.timer > h.duration) chooseState(h);
+      break;
+    case 'DIG':
+      n.fun = clamp(n.fun + 0.022*dt, 0, 1);
+      if (chance(dt*2)) spark(v3(h.pos.x,FLOOR_Y+0.15,h.pos.z),'brown',1,0.3,0.6);
+      if (h.timer > h.duration) chooseState(h);
+      break;
+    default:
+      if (h.timer > h.duration) chooseState(h);
+      break;
+  }
+}
+
+function simulate(dt){
+  S.simTime += dt;
+  const di = Math.floor(S.simTime/DAY_LENGTH);
+  if (di !== S.lastDayIndex){
+    S.lastDayIndex = di;
+    if (S.autoFeed){
+      S.food = FOOD_MAX; S.water = WATER_MAX;
+      addLog('Dawn — the caretaker tops up food and water','dawn');
+      showToast('A new day · bowls refilled','gold');
+      spark(v3(SPOT.bowl.x,FLOOR_Y+0.8,SPOT.bowl.z),'gold',10,0.7,1);
+      spark(v3(-8.0,FLOOR_Y+2.4,0.6),'blue',8,0.4,0.6);
+      chime('dawn');
+    } else addLog('Dawn breaks over the cage','dawn');
+  }
+  S.water = clamp(S.water - 0.012*dt, 0, WATER_MAX);
+  S.food = clamp(S.food - 0.004*dt, 0, FOOD_MAX);
+  S.wheelRunning = false;
+
+  for (const h of S.hamsters){
+    if (h.dead) continue;
+    const age = S.simTime - h.birthTime;
+    h.elder = age > h.lifespan*0.76;
+    h.size = age < MATURE_AGE ? lerp(0.42, 1, clamp(age/MATURE_AGE,0,1)) : (h.elder ? 0.92 : 1);
+    const asleep = h.state === 'SLEEP' && h.phase === 'act';
+    const metab = asleep ? 0.55 : (isNight() ? 0.82 : 1.06);
+    const n = h.needs;
+    n.hunger = clamp(n.hunger - 0.0076*metab*dt, 0, 1);
+    n.thirst = clamp(n.thirst - 0.0096*metab*dt, 0, 1);
+    n.energy = clamp(n.energy + (asleep ? 0.0 : -0.0066*(isNight()?0.68:1.3)*dt), 0, 1);
+    n.social = clamp(n.social - 0.0054*metab*dt, 0, 1);
+    n.fun = clamp(n.fun - 0.0062*metab*dt, 0, 1);
+    if (n.hunger < 0.08 || n.thirst < 0.08) h.health = clamp(h.health - 0.010*dt, 0, 1);
+    else if (n.hunger > 0.4 && n.thirst > 0.4) h.health = clamp(h.health + 0.006*dt, 0, 1);
+    if (h.health <= 0) { kill(h,'starved'); continue; }
+    if (age >= h.lifespan) { kill(h,'old age'); continue; }
+    runState(h, dt);
+  }
+  if (S.hamsters.some(h=>h.dead)) S.hamsters = S.hamsters.filter(h=>!h.dead);
+
+  const snapshot = S.hamsters.slice();
+  for (const h of snapshot) if (!h.dead && h.pregnantUntil > 0 && S.simTime >= h.pregnantUntil) giveBirth(h);
+
+  const list = alive(), pop = list.length;
+  if (pop === 0) { arrival(2); S.lonelyTimer = 0; }
+  else if (pop === 1) {
+    S.lonelyTimer += dt;
+    if (S.lonelyTimer > 35) { arrival(1, list[0].gender==='M'?'F':'M'); S.lonelyTimer = 0; }
+  } else if (!list.some(h=>h.gender==='M') || !list.some(h=>h.gender==='F')) {
+    S.lonelyTimer += dt;
+    if (S.lonelyTimer > 35) { arrival(1, list.some(h=>h.gender==='M')?'F':'M'); S.lonelyTimer = 0; }
+  } else S.lonelyTimer = 0;
+
+  S.wheelAngle += (S.wheelRunning ? 3.5 : 0.10)*dt;
+  S.historyTimer += dt;
+  if (S.historyTimer >= 2){
+    S.historyTimer = 0;
+    S.popHistory.push(pop);
+    if (S.popHistory.length > 120) S.popHistory.shift();
+  }
+}
+function advance(simDt){
+  if (!finite(simDt) || simDt <= 0) return;
+  let left = simDt, guard = 0;
+  while (left > 1e-6 && guard++ < 100000){
+    const s = Math.min(0.1, left);
+    simulate(s); left -= s;
+  }
+}
+
+const SKY = {
+  night:new THREE.Color(0x0a1124), day:new THREE.Color(0x8ab8dc), dusk:new THREE.Color(0xe39a68),
+  bg:new THREE.Color(), tmp:new THREE.Color(),
+  hemiNight:new THREE.Color(0x6c7fb4), hemiDay:new THREE.Color(0xdcecff),
+  sunLow:new THREE.Color(0xff9c62), sunHigh:new THREE.Color(0xfff2d2)
+};
+function updateSky(){
+  const f = dayFactor(), e = sunElevation(), p = phase();
+  const a = 2*Math.PI*(p-0.25);
+  const bg = SKY.bg.copy(SKY.night).lerp(SKY.day, f);
+  const duskAmt = clamp(1-Math.abs(e)*3.0,0,1)*0.5;
+  bg.lerp(SKY.dusk, duskAmt);
+  scene.background.copy(bg);
+  hemi.intensity = 0.34 + f*0.85;
+  hemi.color.copy(SKY.tmp.copy(SKY.hemiNight).lerp(SKY.hemiDay, f));
+  ambient.intensity = 0.20 + f*0.18;
+  sunLight.intensity = clamp(e,0,1)*1.5 + 0.02;
+  sunLight.color.copy(SKY.tmp.copy(SKY.sunLow).lerp(SKY.sunHigh, clamp(e,0,1)));
+  sunLight.position.set(Math.sin(a)*26, Math.cos(a)*26+3, -14);
+  moonLight.intensity = clamp(-e,0,1)*0.58;
+  moonLight.position.set(-Math.sin(a)*26, -Math.cos(a)*26+3, -14);
+  sunMesh.position.copy(sunLight.position).multiplyScalar(1.7);
+  moonMesh.position.copy(moonLight.position).multiplyScalar(1.7);
+  sunMesh.visible = e > -0.12; moonMesh.visible = e < 0.12;
+  starMat.opacity = clamp((0.42-f)*1.8,0,0.9);
+  moteMat.opacity = 0.22 + (1-f)*0.3;
+  houseLight.intensity = (1-f)*1.8;
+  const mp = moteGeo.attributes.position;
+  for (let i=0;i<70;i++){
+    mp.array[i*3+1] = 0.8 + ((S.simTime*0.18 + i*0.37) % 5.2);
+    mp.array[i*3] += Math.sin(S.simTime*0.4+i)*0.002;
+  }
+  mp.needsUpdate = true;
+}
+
+function updateVisuals(realDt){
+  const k = 1 - Math.exp(-22*realDt*clamp(S.speed,0.5,4));
+  for (const h of S.hamsters){
+    if (h.dead) continue;
+    const m = h.mesh, p = m.userData.parts;
+    m.position.x = lerp(m.position.x, h.pos.x, k);
+    m.position.z = lerp(m.position.z, h.pos.z, k);
+    m.position.y = lerp(m.position.y, FLOOR_Y + h.height, k);
+    let d = h.heading - m.rotation.y;
+    d = Math.atan2(Math.sin(d), Math.cos(d));
+    m.rotation.y += d*k;
+    m.scale.setScalar(lerp(m.scale.x, h.size, Math.min(1,k*1.6)));
+    if (h.elder && !h.elderApplied){
+      p.bodyMesh.material = FUR_MATS[h.palette].elderFur;
+      p.headMesh.material = FUR_MATS[h.palette].elderFur;
+      h.elderApplied = true;
+    }
+    const ph = S.simTime*(h.state==='WHEEL'&&h.phase==='act'?15:9) + h.id*1.7;
+    const walk = h.moving ? 1 : 0;
+    p.body.position.y = walk ? Math.abs(Math.sin(ph))*0.05 : Math.sin(S.simTime*2.2+h.id)*0.009;
+    p.body.rotation.z = walk ? Math.sin(ph)*0.045 : 0;
+    p.body.rotation.x = lerp(p.body.rotation.x, (h.state==='WHEEL'?-0.25:(h.state==='GROOM'?-0.38:(h.state==='SLIDE'?0.3:(h.state==='DIG'?0.2:0)))), 0.12);
+    p.feet.forEach((f,i)=>{ f.rotation.x = walk ? Math.sin(ph + (i%2?Math.PI:0))*0.55 : lerp(f.rotation.x,0,0.2); });
+    let hx = 0, hz = 0;
+    switch(h.state){
+      case 'EAT':   hx = 0.22 + Math.sin(ph*0.6)*0.2; break;
+      case 'DRINK': hx = 0.08 + Math.sin(ph*0.5)*0.09; break;
+      case 'SLEEP': hx = 0.34; break;
+      case 'GROOM': hz = Math.sin(S.simTime*7+h.id)*0.22; hx = -0.18; break;
+      case 'SOCIAL':hx = Math.sin(S.simTime*3+h.id)*0.12; break;
+      case 'WHEEL': hx = -0.12; break;
+      case 'DIG':   hx = 0.2; break;
+    }
+    p.head.rotation.x = lerp(p.head.rotation.x, hx, 0.16);
+    p.head.rotation.z = lerp(p.head.rotation.z, hz, 0.16);
+    const blink = (S.simTime*0.41 + h.id*0.27) % 6.5 < 0.11;
+    const closed = (h.state==='SLEEP' && h.phase==='act') || blink;
+    p.eyes.forEach(e=>{ e.scale.y = lerp(e.scale.y, closed?0.1:1, 0.35); });
+    const puff = h.state==='EAT' && h.phase==='act' ? 1.35 : 1;
+    p.cheeks.forEach(c=>{ c.scale.x = lerp(c.scale.x,puff,0.15); c.scale.y = lerp(c.scale.y,0.85*puff,0.15); });
+  }
+
+  WORLD.wheelSpin.rotation.z = -S.wheelAngle;
+  const lvl = clamp(S.water/WATER_MAX,0,1);
+  WORLD.waterInner.scale.y = Math.max(lvl,0.001);
+  WORLD.waterInner.position.y = -1.05 + 1.0*lvl;
+  WORLD.pellets.count = Math.round(clamp(S.food/FOOD_MAX,0,1)*64);
+
+  const sel = byId(S.selectedId);
+  if (sel){
+    WORLD.ring.visible = true;
+    WORLD.ring.position.set(sel.mesh.position.x, FLOOR_Y+0.06, sel.mesh.position.z);
+    const s = 1 + Math.sin(S.simTime*2.5)*0.07;
+    WORLD.ring.scale.set(s,s,1);
+    MAT.ring.opacity = 0.6 + Math.sin(S.simTime*2.5)*0.25;
+  } else WORLD.ring.visible = false;
+
+  const speedScale = S.paused ? 0 : Math.max(S.speed,0.5);
+  for (const p of POOL){
+    if (p.life <= 0){ if (p.mesh.visible) p.mesh.visible=false; continue; }
+    p.life -= realDt*speedScale;
+    if (p.life <= 0){ p.mesh.visible=false; continue; }
+    p.mesh.position.x += p.vx*realDt*speedScale;
+    p.mesh.position.y += p.vy*realDt*speedScale;
+    p.mesh.position.z += p.vz*realDt*speedScale;
+    p.vy -= 1.1*realDt*speedScale;
+    p.mesh.scale.setScalar(p.size*clamp(p.life/p.max,0,1));
+    p.mesh.rotation.y += realDt*2;
+  }
+  updateSky();
+}
+
+function updateCamera(realDt){
+  if (S.followId){
+    const h = byId(S.followId);
+    if (h) cam.focus.set(h.mesh.position.x, FLOOR_Y+1.0, h.mesh.position.z);
+    else { S.followId = null; S.selectedId = null; cam.focus.set(0,2.1,0); }
+  }
+  cam.target.lerp(cam.focus, 1-Math.exp(-2.4*realDt));
+  applyCamera();
+}
+
+function updateToast(realDt){
+  const el = $('toast'), now = performance.now();
+  if (S.quiet) return;
+  if (now > S.toastUntil && S.toastQueue.length){
+    const t = S.toastQueue.shift();
+    el.textContent = t.text;
+    el.style.borderColor = t.color==='green'?'rgba(143,214,160,.5)':t.color==='blue'?'rgba(143,196,245,.5)':t.color==='white'?'rgba(220,228,240,.4)':'rgba(244,197,106,.5)';
+    el.classList.add('show');
+    S.toastUntil = now + 3600;
+  } else if (now > S.toastUntil + 300) el.classList.remove('show');
+}
+
+function needColor(v){ return v>0.6 ? 'linear-gradient(90deg,#5fa97a,#8fd6a0)' : v>0.3 ? 'linear-gradient(90deg,#b8934e,#e5c079)' : 'linear-gradient(90deg,#b05252,#ef8d8d)'; }
+function drawSpark(){
+  const c = $('spark'), ctx = c.getContext('2d'), w = c.width, h = c.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle = 'rgba(190,214,255,.10)'; ctx.lineWidth = 1;
+  for (let i=1;i<4;i++){ const y=h*i/4; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  const data = S.popHistory.length ? S.popHistory : [S.hamsters.length];
+  const max = Math.max(6, ...data)+1;
+  const n = Math.max(data.length,2);
+  const pt = i => ({ x: i/(n-1)*w, y: h - (data[i]/max)*(h-10) - 5 });
+  ctx.beginPath(); ctx.moveTo(0,h);
+  data.forEach((v,i)=>{ const p=pt(i); ctx.lineTo(p.x,p.y); });
+  ctx.lineTo(w,h); ctx.closePath();
+  const g = ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,'rgba(244,197,106,.22)'); g.addColorStop(1,'rgba(244,197,106,0)');
+  ctx.fillStyle = g; ctx.fill();
+  ctx.beginPath(); data.forEach((v,i)=>{ const p=pt(i); i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+  ctx.strokeStyle = '#f4c56a'; ctx.lineWidth = 2; ctx.stroke();
+  const last = pt(data.length-1);
+  ctx.beginPath(); ctx.arc(last.x,last.y,3.5,0,7); ctx.fillStyle='#ffe3a8'; ctx.fill();
+  ctx.fillStyle='rgba(140,156,178,.9)'; ctx.font='16px Segoe UI'; ctx.fillText('max '+MAX_POP,8,18);
+}
+
+function updateUI(realDt){
+  S.uiTimer += realDt;
+  if (S.uiTimer < 0.1) return;
+  S.uiTimer = 0;
+  const pop = alive().length, ph = phase(), f = dayFactor();
+  $('dayLabel').textContent = 'DAY '+dayIndex();
+  $('clock').textContent = clockString();
+  $('phaseLabel').textContent = phaseLabel();
+  $('logClock').textContent = clockString();
+  $('cycleFill').style.width = (ph*100).toFixed(1)+'%';
+  $('foodVal').textContent = Math.round(S.food)+'%';
+  $('waterVal').textContent = Math.round(S.water)+'%';
+  $('foodBar').firstElementChild.style.width = (S.food/FOOD_MAX*100)+'%';
+  $('waterBar').firstElementChild.style.width = (S.water/WATER_MAX*100)+'%';
+  $('popVal').textContent = pop;
+  $('genVal').textContent = S.maxGen;
+  $('birthVal').textContent = S.births;
+  $('deathVal').textContent = S.deaths;
+  $('speedTag').textContent = 'x'+S.speed;
+  $('lapsVal').textContent = Math.floor(S.wheelLaps);
+  $('daysVal').textContent = dayIndex();
+  $('oldestVal').textContent = S.longestLife.days ? S.longestLife.name+' · '+S.longestLife.days.toFixed(1)+'d' : '—';
+  const avg = key => { const a=alive(); return a.length ? a.reduce((s,h)=>s+h.needs[key],0)/a.length : 1; };
+  let mood = 'Content';
+  if (S.food < 12 || S.water < 12) mood = 'Resources running low';
+  else if (avg('health') < 0.6) mood = 'Struggling';
+  else if (avg('fun') > 0.62 && avg('hunger') > 0.55) mood = 'Thriving';
+  else if (f < 0.25) mood = 'Nocturnal bustle';
+  $('moodText').textContent = mood;
+  $('badge').classList.toggle('show', S.paused);
+  $('pauseBtn').textContent = S.paused ? 'RESUME' : 'PAUSE';
+  $('pauseBtn').classList.toggle('on', S.paused);
+  $('speedTag').style.color = S.speed>=4 ? 'var(--gold)' : '';
+
+  const entries = S.log.slice(0,7);
+  $('logEntry').innerHTML = entries.map(e =>
+    '<div class="entry"><span class="t">'+e.t+'</span><span class="dot '+e.type+'"></span><span>'+e.text+'</span></div>'
+  ).join('');
+
+  const sel = byId(S.selectedId);
+  if (sel){
+    $('inspector').classList.add('show');
+    $('iName').textContent = sel.name;
+    const age = (S.simTime - sel.birthTime)/DAY_LENGTH;
+    const stage = age < 0.35 ? 'PUP' : age < MATURE_AGE/DAY_LENGTH ? 'JUVENILE' : sel.elder ? 'ELDER' : 'ADULT';
+    $('iMeta').textContent = sel.gender==='M'?'MALE':'FEMALE';
+    $('iMeta').textContent += ' · GEN '+sel.gen+' · '+stage+' · age '+age.toFixed(1)+'d / '+(sel.lifespan/DAY_LENGTH).toFixed(1)+'d';
+    $('iActivity').textContent = STATE_LABEL[sel.state] + (sel.pregnantUntil>0 ? ' · expecting pups' : '');
+    $('iNeeds').innerHTML = NEED_KEYS.map(key=>{
+      const v = key==='health' ? sel.health : sel.needs[key];
+      return '<div class="need"><div class="row"><span>'+NEED_LABEL[key]+'</span><span>'+Math.round(v*100)+'%</span></div><div class="bar"><i style="width:'+(v*100)+'%;background:'+needColor(v)+'"></i></div></div>';
+    }).join('');
+    const mom = sel.mother ? byId(sel.mother) : null, dad = sel.father ? byId(sel.father) : null;
+    $('iParents').textContent = (mom||dad) ? 'Parents: '+(mom?mom.name:'unknown')+' & '+(dad?dad.name:'unknown') : 'Born into the founding colony';
+    $('followTag').textContent = S.followId===sel.id ? 'FOLLOWING' : 'SELECTED';
+    $('followTag').classList.toggle('on', S.followId===sel.id);
+  } else $('inspector').classList.remove('show');
+  drawSpark();
+}
+
+function selectHamster(id){
+  S.selectedId = id; S.followId = id;
+  const h = byId(id);
+  if (h){ showToast('Following '+h.name+' · gen '+h.gen+' · '+STATE_LABEL[h.state].toLowerCase(),'gold'); $('followBtn').classList.add('on'); }
+}
+function clearSelection(){
+  S.selectedId = null; S.followId = null;
+  $('followBtn').classList.remove('on');
+  cam.focus.set(0,2.1,0);
+  WORLD.ring.visible = false;
+}
+
+function setSpeed(v){
+  S.speed = v;
+  document.querySelectorAll('#speeds .btn').forEach(b=>b.classList.toggle('on', Number(b.dataset.speed)===v));
+}
+function togglePause(){ S.paused = !S.paused; }
+function refill(){
+  S.food = FOOD_MAX; S.water = WATER_MAX;
+  addLog('You refilled the bowl and the bottle','info');
+  showToast('Food and water replenished','blue');
+  spark(v3(SPOT.bowl.x,FLOOR_Y+0.8,SPOT.bowl.z),'gold',10,0.6,1);
+  spark(v3(-8.0,FLOOR_Y+2.4,0.6),'blue',8,0.4,0.6);
+}
+function resetView(){ cam.az=0.72; cam.pol=1.02; cam.radius=27; cam.focus.set(0,2.1,0); cam.target.copy(cam.focus); applyCamera(); }
+
+function save(){
+  try {
+    const data = {
+      v:1, savedAt:Date.now(), simTime:S.simTime, food:S.food, water:S.water,
+      autoFeed:S.autoFeed, speed:S.speed, births:S.births, deaths:S.deaths, maxGen:S.maxGen,
+      wheelLaps:S.wheelLaps, longestLife:S.longestLife, nextId:S.nextId,
+      usedNames:S.usedNames, lastDayIndex:S.lastDayIndex,
+      popHistory:S.popHistory.slice(-120), log:S.log.slice(0,12),
+      hamsters: S.hamsters.filter(h=>!h.dead).map(h=>({
+        id:h.id, name:h.name, gender:h.gender, palette:h.palette, birthTime:h.birthTime,
+        lifespan:h.lifespan, gen:h.gen, mother:h.mother, father:h.father,
+        pos:h.pos, needs:h.needs, health:h.health, pregnantUntil:h.pregnantUntil,
+        pregnantBy:h.pregnantBy, nextMateAt:h.nextMateAt
+      }))
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (d.v !== 1 || !Array.isArray(d.hamsters) || d.hamsters.length > MAX_POP) return false;
+    if (!finite(d.simTime) || !finite(d.food) || !finite(d.water)) return false;
+    S.simTime = Math.max(0,d.simTime); S.food = clamp(d.food,0,FOOD_MAX); S.water = clamp(d.water,0,WATER_MAX);
+    S.autoFeed = d.autoFeed !== false;
+    S.speed = clamp(finite(d.speed)?d.speed:1, 0.5, 4);
+    S.log = Array.isArray(d.log) ? d.log.slice(0,12) : [];
+    setSpeed(S.speed);
+    S.births = d.births|0; S.deaths = d.deaths|0; S.maxGen = Math.max(1,d.maxGen|0);
+    S.wheelLaps = d.wheelLaps||0; S.longestLife = d.longestLife || {name:'—',days:0};
+    S.nextId = Math.max(1,d.nextId|0); S.usedNames = Array.isArray(d.usedNames) ? d.usedNames : [];
+    S.lastDayIndex = Math.floor(S.simTime/DAY_LENGTH);
+    S.popHistory = Array.isArray(d.popHistory) ? d.popHistory.slice(-120) : [];
+    for (const s of d.hamsters){
+      if (!finite(s.pos.x) || !finite(s.pos.z) || !finite(s.birthTime)) continue;
+      const h = newHamster({
+        name:s.name, gender:s.gender, palette:clamp(s.palette|0,0,FURS.length-1),
+        birthTime:s.birthTime, lifespan:clamp(s.lifespan||380,120,900), gen:s.gen||1,
+        mother:s.mother||null, father:s.father||null, x:s.pos.x, z:s.pos.z,
+        needs:s.needs
+      });
+      if (!h) continue;
+      h.id = s.id; h.mesh.userData.hamsterId = s.id;
+      h.health = clamp(s.health===undefined?1:s.health,0,1);
+      h.pregnantUntil = s.pregnantUntil || 0;
+      h.pregnantBy = s.pregnantBy || null;
+      h.nextMateAt = s.nextMateAt || 0;
+    }
+    S.nextId = Math.max(S.nextId, ...S.hamsters.map(h=>h.id+1), 1);
+    const away = clamp((Date.now() - (d.savedAt||Date.now()))/1000, 0, 600);
+    const catchUp = Math.min(away*S.speed, 900);
+    if (catchUp > 2){
+      const b0 = S.births, d0 = S.deaths, q = S.quiet; S.quiet = true;
+      advance(catchUp); S.quiet = q;
+      showToast('Welcome back · '+(S.births-b0)+' births, '+(S.deaths-d0)+' deaths while away','blue');
+      addLog('The colony lived on while you were away','info');
+    } else showToast('Welcome back to the colony','blue');
+    return true;
+  } catch(e) { return false; }
+}
+function resetColony(){
+  for (const h of S.hamsters) scene.remove(h.mesh);
+  S.hamsters = []; S.simTime=0; S.food=FOOD_MAX; S.water=WATER_MAX;
+  S.births=0; S.deaths=0; S.maxGen=1; S.wheelLaps=0; S.nextId=1; S.usedNames=[];
+  S.longestLife={name:'—',days:0}; S.wheelUserId=null; S.wheelAngle=0;
+  S.lastDayIndex=0; S.lonelyTimer=0; S.popHistory=[]; S.log=[];
+  S.selectedId=null; S.followId=null; S.hoverId=null;
+  seedColony(); save();
+  showToast('A new colony begins','gold');
+  addLog('A new colony settles into the cage','info');
+}
+
+function seedColony(){
+  const ages = [8, 40, 95, 150, 205, 260];
+  const genders = ['F','M','F','M','F','M'];
+  for (let i=0;i<6;i++){
+    const h = newHamster({
+      birthTime:-ages[i], gender:genders[i],
+      x:rnd(-6,6), z:rnd(-4,4),
+      needs:{ hunger:rnd(0.6,0.9), thirst:rnd(0.6,0.9), energy:rnd(0.55,0.9), social:rnd(0.45,0.85), fun:rnd(0.4,0.8) }
+    });
+    if (h) h.nextMateAt = S.simTime + rnd(0,18);
+  }
+  S.popHistory = [6];
+  addLog('Six hamsters settle into their new home','info');
+}
+
+function raycastHamster(clientX, clientY){
+  const rect = renderer.domElement.getBoundingClientRect();
+  const ndc = new THREE.Vector2(((clientX-rect.left)/rect.width)*2-1, -((clientY-rect.top)/rect.height)*2+1);
+  const ray = new THREE.Raycaster(); ray.setFromCamera(ndc, camera);
+  const meshes = S.hamsters.filter(h=>!h.dead).map(h=>h.mesh);
+  const hits = ray.intersectObjects(meshes, true);
+  for (const hit of hits){
+    let o = hit.object;
+    while (o && o.userData.hamsterId === undefined) o = o.parent;
+    if (o && o.userData.hamsterId !== undefined){ const h = byId(o.userData.hamsterId); if (h) return h; }
+  }
+  return null;
+}
+
+let pointer = { down:false, x:0, y:0, sx:0, sy:0, button:0, moved:0 };
+const canvas = renderer.domElement;
+canvas.addEventListener('contextmenu', e=>e.preventDefault());
+canvas.addEventListener('pointerdown', e=>{
+  pointer.down=true; pointer.x=e.clientX; pointer.y=e.clientY;
+  pointer.sx=e.clientX; pointer.sy=e.clientY; pointer.button=e.button; pointer.moved=0;
+  canvas.setPointerCapture(e.pointerId);
+});
+let hoverTimer = 0;
+canvas.addEventListener('pointermove', e=>{
+  const dx = e.clientX-pointer.x, dy = e.clientY-pointer.y;
+  pointer.x=e.clientX; pointer.y=e.clientY;
+  if (pointer.down){
+    pointer.moved += Math.abs(dx)+Math.abs(dy);
+    if (pointer.button===2 || e.shiftKey){
+      cam.focus.x -= dx*0.02*Math.cos(cam.az); cam.focus.z += dx*0.02*Math.sin(cam.az);
+      cam.focus.y = clamp(cam.focus.y + dy*0.02, 0.5, 6);
+    } else {
+      cam.az -= dx*0.005; cam.pol = clamp(cam.pol - dy*0.005, 0.22, 1.46);
+    }
+  } else {
+    const now = performance.now();
+    if (now - hoverTimer > 90){
+      hoverTimer = now;
+      const h = raycastHamster(e.clientX, e.clientY);
+      const tip = $('tooltip');
+      if (h){
+        S.hoverId = h.id; canvas.style.cursor='pointer';
+        tip.innerHTML = '<b>'+h.name+'</b><span>'+STATE_LABEL[h.state]+'</span>';
+        tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px';
+      } else { S.hoverId=null; canvas.style.cursor='grab'; tip.style.display='none'; }
+    }
+  }
+});
+canvas.addEventListener('pointerup', e=>{
+  if (pointer.down && pointer.moved < 6 && pointer.button===0){
+    const h = raycastHamster(e.clientX, e.clientY);
+    if (h) selectHamster(h.id); else clearSelection();
+  }
+  pointer.down=false;
+});
+canvas.addEventListener('wheel', e=>{ e.preventDefault(); cam.radius = clamp(cam.radius*(1+Math.sign(e.deltaY)*0.09), 8, 52); }, {passive:false});
+
+$('pauseBtn').onclick = togglePause;
+document.querySelectorAll('#speeds .btn').forEach(b=> b.onclick = ()=>setSpeed(Number(b.dataset.speed)));
+$('refillBtn').onclick = refill;
+$('autoBtn').onclick = ()=>{ S.autoFeed=!S.autoFeed; $('autoBtn').textContent='AUTO-FEED '+(S.autoFeed?'ON':'OFF'); $('autoBtn').classList.toggle('on',S.autoFeed); showToast('Auto-feeder '+(S.autoFeed?'enabled':'disabled'),'blue'); };
+$('followBtn').onclick = ()=>{
+  if (S.followId){ S.followId=null; $('followBtn').classList.remove('on'); }
+  else { const h = byId(S.selectedId) || alive()[0]; if (h){ S.selectedId=h.id; S.followId=h.id; $('followBtn').classList.add('on'); } }
+};
+$('viewBtn').onclick = resetView;
+$('soundBtn').onclick = ()=>{ S.soundOn=!S.soundOn; $('soundBtn').textContent='SOUND '+(S.soundOn?'ON':'OFF'); $('soundBtn').classList.toggle('on',S.soundOn); if(S.soundOn) chime('dawn'); };
+$('helpBtn').onclick = ()=> $('help').classList.toggle('show');
+$('resetBtn').onclick = ()=>{ resetColony(); resetView(); };
+window.addEventListener('keydown', e=>{
+  if (e.key===' '){ e.preventDefault(); togglePause(); }
+  else if (e.key==='1') setSpeed(0.5);
+  else if (e.key==='2') setSpeed(1);
+  else if (e.key==='3') setSpeed(2);
+  else if (e.key==='4') setSpeed(4);
+  else if (e.key.toLowerCase()==='r') refill();
+  else if (e.key.toLowerCase()==='f') $('followBtn').click();
+  else if (e.key.toLowerCase()==='c') resetView();
+  else if (e.key.toLowerCase()==='h') document.body.classList.toggle('clean');
+  else if (e.key==='Escape') clearSelection();
+});
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+window.addEventListener('visibilitychange', ()=>{ if (document.hidden) save(); });
+window.addEventListener('beforeunload', save);
+setInterval(()=>{ if (!document.hidden) save(); }, 8000);
+
+function snapshot(){
+  const counts = {};
+  for (const h of S.hamsters) counts[h.state] = (counts[h.state]||0)+1;
+  return {
+    simTime: +S.simTime.toFixed(1), day: dayIndex(), phase: phaseLabel(), clock: clockString(),
+    speed: S.speed, paused: S.paused, food:+S.food.toFixed(1), water:+S.water.toFixed(1),
+    population: alive().length, births:S.births, deaths:S.deaths, maxGen:S.maxGen,
+    wheelUser:S.wheelUserId, wheelLaps:Math.floor(S.wheelLaps), states:counts,
+    autoFeed:S.autoFeed, logLines:S.log.length, particles:POOL.filter(p=>p.life>0).length,
+    geometryCount:renderer.info.memory.geometries, textureCount:renderer.info.memory.textures,
+    errors:ERRORS.slice(-8)
+  };
+}
+function validate(){
+  const bad = [];
+  const list = alive();
+  if (list.length > MAX_POP) bad.push('population over cap: '+list.length);
+  if (!finite(S.food) || S.food < -0.001 || S.food > FOOD_MAX+0.001) bad.push('food out of range: '+S.food);
+  if (!finite(S.water) || S.water < -0.001 || S.water > WATER_MAX+0.001) bad.push('water out of range: '+S.water);
+  if (!finite(S.simTime)) bad.push('simTime not finite');
+  const ids = new Set();
+  for (const h of list){
+    if (ids.has(h.id)) bad.push('duplicate id '+h.id); ids.add(h.id);
+    if (!finite(h.pos.x) || !finite(h.pos.z)) bad.push(h.name+' position NaN');
+    if (!finite(h.mesh.position.x) || !finite(h.mesh.position.y) || !finite(h.mesh.position.z)) bad.push(h.name+' mesh NaN');
+    for (const k of ['hunger','thirst','energy','social','fun']){
+      const v = h.needs[k];
+      if (!finite(v) || v < -0.001 || v > 1.001) bad.push(h.name+' '+k+' out of range: '+v);
+    }
+    if (!finite(h.health) || h.health < -0.001 || h.health > 1.001) bad.push(h.name+' health out of range');
+    if (!(h.state in STATE_LABEL)) bad.push(h.name+' invalid state '+h.state);
+    if (h.state === 'WHEEL' && S.wheelUserId !== h.id) bad.push(h.name+' wheel without lock');
+    if (h.partnerId !== null){
+      const p = byId(h.partnerId);
+      if (!p) bad.push(h.name+' dangling partner '+h.partnerId);
+      else if (p.partnerId !== h.id) bad.push(h.name+' asymmetric partner with '+p.name);
+    }
+    if (S.simTime - h.birthTime > h.lifespan + 1) bad.push(h.name+' over lifespan');
+    if (h.mesh.parent !== scene) bad.push(h.name+' mesh detached');
+  }
+  const wheelHolders = list.filter(h=>h.state==='WHEEL');
+  if (wheelHolders.length > 1) bad.push('multiple wheel occupants');
+  if (!wheelHolders.length && S.wheelUserId !== null) bad.push('stale wheel lock '+S.wheelUserId);
+  if (S.selectedId !== null && !byId(S.selectedId)) bad.push('stale selection');
+  if (S.followId !== null && !byId(S.followId)) bad.push('stale follow');
+  if (ERRORS.length) bad.push('runtime errors: '+ERRORS.slice(-3).join(' | '));
+  return bad;
+}
+window.HABITAT.debug = {
+  snapshot, validate,
+  fastForward(sec){ const q=S.quiet; S.quiet=true; let left=Math.min(sec,72000), guard=0; while(left>0.0001 && guard++<800000){ const s=Math.min(0.1,left); simulate(s); left-=s; } S.quiet=q; return snapshot(); },
+  setSpeed, setPaused(v){ S.paused=!!v; }, pause:togglePause, refill, reset:resetColony,
+  spawn(n){ for(let i=0;i<n;i++) newHamster({birthTime:S.simTime-rnd(70,160)}); return snapshot(); },
+  killAll(){ for(const h of S.hamsters.slice()) kill(h,'test'); return snapshot(); },
+  save, load,
+  setFood(v){ S.food=clamp(v,0,FOOD_MAX); }, setWater(v){ S.water=clamp(v,0,WATER_MAX); },
+  setAutoFeed(v){ S.autoFeed=!!v; },
+  project(id){ const h=byId(id); if(!h) return null; const v=new THREE.Vector3(h.mesh.position.x,h.mesh.position.y+0.5,h.mesh.position.z).project(camera); return { x:(v.x+1)/2*window.innerWidth, y:(1-v.y)/2*window.innerHeight, z:v.z }; },
+  pickAt(x,y){ const h=raycastHamster(x,y); return h?{id:h.id,name:h.name,state:h.state}:null; },
+  cameraState(){ return { az:+cam.az.toFixed(3), pol:+cam.pol.toFixed(3), radius:+cam.radius.toFixed(2), focus:[+cam.focus.x.toFixed(2),+cam.focus.y.toFixed(2),+cam.focus.z.toFixed(2)], target:[+cam.target.x.toFixed(2),+cam.target.y.toFixed(2),+cam.target.z.toFixed(2)] }; },
+  rendererInfo(){ return { geometries:renderer.info.memory.geometries, textures:renderer.info.memory.textures, calls:renderer.info.render.calls, triangles:renderer.info.render.triangles }; }
+};
+
+load();
+if (!S.hamsters.length) seedColony();
+$('autoBtn').textContent = 'AUTO-FEED '+(S.autoFeed?'ON':'OFF');
+$('autoBtn').classList.toggle('on', S.autoFeed);
+for (let i=0;i<6;i++) S.popHistory.push(alive().length);
+
+let last = performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  const realDt = Math.min((now-last)/1000, 0.1);
+  last = now;
+  if (!S.paused) advance(realDt*S.speed);
+  updateVisuals(realDt);
+  updateCamera(realDt);
+  updateToast(realDt);
+  updateUI(realDt);
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

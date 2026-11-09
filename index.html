@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tencent Hy4 solo: 5 tests</title>
+<style>
+  :root { --bg: #0b0d14; --card: #141826; --text: #e9ecf5; --muted: #8d94ab; --hy4: #4f8cff; --octo: #b48cff; --line: #232a3d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, "Segoe UI", sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .test { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .test h2 { font-size: 18px; margin: 0 0 4px; }
+  .test h2 span { color: var(--hy4); }
+  .test p { color: var(--muted); margin: 0 0 12px; font-size: 14px; }
+  .test.octo h2 span { color: var(--octo); }
+  a { color: var(--text); }
+  .btn { display: inline-block; margin: 0 10px 6px 0; padding: 7px 14px; border-radius: 8px; background: #1d2338; border: 1px solid var(--line); text-decoration: none; }
+  .btn:hover { border-color: var(--hy4); }
+  .preview { display: block; width: 100%; max-width: 420px; border-radius: 8px; background: #fff; margin-top: 8px; }
+  code { background: #0f1320; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td, th { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Tencent Hy4 solo: 5 tests, one shot each</h1>
+  <p class="sub">One prompt per test, no fixes, no hints. Play the results right here.
+    <br>Один промпт на тест, без правок и подсказок. Всё, кроме питомца, работает прямо в браузере.
+    · <a href="https://github.com/KostiKoNeuro/hy4-solo">Prompts, code and costs on GitHub</a>
+    · <a href="https://t.me/kostik_neuro">Telegram</a></p>
+
+  <section class="test">
+    <h2><span>1</span> · SVG animation · SVG-анимация</h2>
+    <p>A giraffe trying to squeeze into a tiny phone booth to make a call. Жираф лезет в крошечную телефонную будку, чтобы позвонить.</p>
+    <a class="btn" href="1-svg/scene.svg">Open · Открыть</a>
+    <img class="preview" src="1-svg/scene.svg" alt="Giraffe in a phone booth, animated SVG">
+  </section>
+
+  <section class="test">
+    <h2><span>2</span> · Rube Goldberg machine · Машина Голдберга</h2>
+    <p>Wake a sleeping hamster in the silliest way possible. Press Start. Разбудить спящего хомяка самым нелепым способом, жми Start.</p>
+    <a class="btn" href="2-goldberg/">Play · Играть</a>
+  </section>
+
+  <section class="test octo">
+    <h2><span>3</span> · Desktop pet Octo · Питомец Окто</h2>
+    <p>Hy4 picked its own animal: an octopus, «eight tentacles = eight tasks at once». A Windows app, so it is a download, not a web page.
+      Hy4 сама выбрала зверя и нарисовала себя осьминогом. Это программа для Windows: скачай, поставь <code>pip install PySide6</code> и запусти <code>run.bat</code>.</p>
+    <a class="btn" href="https://github.com/KostiKoNeuro/hy4-solo/tree/main/3-desktop-pet">Code and how to run · Код и запуск</a>
+    <a class="btn" href="https://github.com/KostiKoNeuro/hy4-solo/archive/refs/heads/main.zip">Download ZIP · Скачать</a>
+    <img class="preview" style="max-width:160px;background:none" src="3-desktop-pet/Oktopet/sprites/idle.png" alt="Octo the octopus">
+  </section>
+
+  <section class="test">
+    <h2><span>4</span> · Mini golf · Мини-гольф</h2>
+    <p>It got our three hand-drawn holes and invented a better one: portal, magnet, ice, a short risky route and a long safe one. Drag back from the ball and release; O = blueprint overlay. Оттяни от мяча и отпусти, O накладывает чертёж.</p>
+    <a class="btn" href="4-minigolf/">Play · Играть</a>
+    <a class="btn" href="4-minigolf/my-hole.svg">Blueprint · Чертёж</a>
+  </section>
+
+  <section class="test">
+    <h2><span>5</span> · Hamster habitat · Клетка с хомяками</h2>
+    <p>A low-poly colony that lives for generations. Click a hamster to follow it, speed up to ×4. Клик по хомяку, ускорение до ×4.</p>
+    <a class="btn" href="5-hamsters/">Open · Открыть</a>
+  </section>
+
+  <section class="test">
+    <h2>Time and cost · Время и цена</h2>
+    <p>At CometAPI prices. Test 1 in Claude Code, tests 2 to 5 in OpenCode.</p>
+    <table>
+      <tr><th>Test</th><th>Time</th><th>Cost</th></tr>
+      <tr><td>1 SVG</td><td>14 min</td><td>$0.89</td></tr>
+      <tr><td>2 Goldberg</td><td>37 min</td><td>$0.74</td></tr>
+      <tr><td>3 Desktop pet</td><td>66 min</td><td>$0.86 + kie.ai $0.42</td></tr>
+      <tr><td>4 Mini golf</td><td>50 min</td><td>$0.87</td></tr>
+      <tr><td>5 Hamsters</td><td>37 min</td><td>$0.82</td></tr>
+      <tr><th>Total</th><th>3 h 25 min</th><th>$4.17 + $0.42</th></tr>
+    </table>
+  </section>
+
+  <footer>Made for the «Ботанутый Костя» YouTube channel. All scores and opinions are my own.</footer>
+</main>
+</body>
+</html>
